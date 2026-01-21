@@ -328,17 +328,29 @@ document.addEventListener('DOMContentLoaded', function() {
         if (saved) {
             try {
                 const beats = JSON.parse(saved);
-                beatsGrid.innerHTML = '';
-                
-                beats.forEach(beat => {
-                    const beatCard = createBeatCard(beat);
-                    beatsGrid.appendChild(beatCard);
-                });
-                
-                // Re-attach event listeners after loading
-                attachBeatEventListeners();
+                if (beatsGrid) {
+                    beatsGrid.innerHTML = '';
+                    
+                    beats.forEach(beat => {
+                        const beatCard = createBeatCard(beat);
+                        beatsGrid.appendChild(beatCard);
+                    });
+                    
+                    // Re-attach event listeners after loading
+                    attachBeatEventListeners();
+                }
             } catch(e) {
-                console.log('No saved beats found');
+                console.log('No saved beats found or error parsing');
+                // If no beats, show empty state
+                if (beatsGrid && beatsGrid.children.length === 0) {
+                    beatsGrid.innerHTML = `
+                        <div class="no-beats-message" style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-secondary);">
+                            <i class="fas fa-music" style="font-size: 48px; margin-bottom: 20px; opacity: 0.3;"></i>
+                            <h3>No beats yet</h3>
+                            <p>Add your first beat using the form above!</p>
+                        </div>
+                    `;
+                }
             }
         }
     }
@@ -853,7 +865,7 @@ ${message}
         }
     });
     
-    // Add beat functionality
+    // Add beat functionality - FIXED TO ALSO SHOW ON WEBSITE
     if (adminAddBeatBtn) {
         adminAddBeatBtn.addEventListener('click', () => {
             const title = adminBeatTitle.value.trim();
@@ -879,10 +891,34 @@ ${message}
                 audio
             };
             
+            // ========== FIX 1: ADD TO ADMIN PANEL ==========
             adminBeats.unshift(newBeat); // Add to beginning
             saveAdminBeats();
             updateBeatList();
             updateBeatCount();
+            
+            // ========== FIX 2: ALSO ADD TO WEBSITE BEATS ==========
+            // Get current website beats
+            let userBeats = JSON.parse(localStorage.getItem('userBeats') || '[]');
+            
+            // Add the new beat to website beats
+            userBeats.unshift({
+                title: title.toUpperCase(),
+                genre: genre,
+                bpm: bpm,
+                key: key,
+                lease: lease.startsWith('$') ? lease.replace('$', '') : lease,
+                exclusive: exclusive.startsWith('$') ? exclusive.replace('$', '') : exclusive,
+                audio: audio
+            });
+            
+            // Save website beats
+            localStorage.setItem('userBeats', JSON.stringify(userBeats));
+            
+            // ========== FIX 3: UPDATE WEBSITE DISPLAY ==========
+            if (beatsGrid) {
+                loadSavedBeats();
+            }
             
             // Clear form
             adminBeatTitle.value = '';
@@ -893,7 +929,7 @@ ${message}
             adminBeatExclusive.value = '';
             adminBeatAudio.value = '';
             
-            showNotification('Beat added to admin panel');
+            showNotification('✅ Beat added to both admin panel and website!');
         });
     }
     
@@ -1033,12 +1069,12 @@ ${message}
     // Clear all beats
     if (clearAllBeatsBtn) {
         clearAllBeatsBtn.addEventListener('click', () => {
-            if (confirm('Are you sure you want to clear ALL beats? This cannot be undone.')) {
+            if (confirm('Are you sure you want to clear ALL beats from admin panel? This cannot be undone.')) {
                 adminBeats = [];
                 saveAdminBeats();
                 updateBeatList();
                 updateBeatCount();
-                showNotification('All beats cleared');
+                showNotification('All beats cleared from admin panel');
             }
         });
     }
