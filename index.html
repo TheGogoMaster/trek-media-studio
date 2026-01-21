@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beat Sales, Vocal Mixing, Mastering & Music Production Lessons | Trek Media Studios</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎛️</text></svg>">
@@ -80,43 +80,6 @@
         </div>
     </section>
 
-<!-- Image Upload Panel - REMOVED FOR CLIENT VIEW -->
-<!--
-<div class="image-upload-panel">
-    <div class="upload-section">
-        <h3><i class="fas fa-images"></i> Customize Website Images</h3>
-        ... ALL UPLOAD CONTENT ...
-    </div>
-</div>
--->
-                </div>
-                <div class="upload-group">
-                    <h4><i class="fas fa-user-circle"></i> Profile Image</h4>
-                    <input type="file" id="profileUpload" accept="image/*" hidden>
-                    <!-- Profile upload button removed for client view -->
-		    <!-- <button class="btn-upload" id="uploadProfileBtn">
-    		    <i class="fas fa-camera"></i> Change Profile
-		    </button> -->
-                    <div class="image-preview" id="profilePreview">
-                        <img src="https://i.imgur.com/1TZwnGp.jpeg" alt="Current Profile Photo">
-                        <div class="preview-overlay">
-                            <span>Current Profile</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="upload-actions">
-                <button class="btn-clear" id="clearImagesBtn">
-                    <i class="fas fa-trash"></i> Reset Images
-                </button>
-                <button class="btn-save-images" id="saveImagesBtn">
-                    <i class="fas fa-save"></i> Save Changes
-                </button>
-            </div>
-            <p class="upload-note"><i class="fas fa-info-circle"></i> Changes are saved in your browser</p>
-        </div>
-    </div>
-
     <!-- About Section -->
     <section id="about" class="about">
         <div class="container">
@@ -125,7 +88,7 @@
                 <div class="about-text">
                     <p class="bio">"Transforming sound into art, I'm a seasoned Music Producer & Audio Engineer with years of experience. I am passionate about crafting compelling sounds, I elevate artists' visions and bring music to life. With expertise in content creation and advert production, I craft audio that captivates audiences and drives results. Staying ahead of industry trends, I deliver high-quality recordings, mixes, masters, and ads that resonate with listeners."</p>
                     <div class="producer-tag">
-		    <p>Specializing in beat sales, vocal mixing, mastering, and one-on-one music production lessons for aspiring artists and producers.</p>
+                    <p>Specializing in beat sales, vocal mixing, mastering, and one-on-one music production lessons for aspiring artists and producers.</p>
                         <span class="tag-icon">🎚️</span>
                         <h3>THE GOGOMASTER</h3>
                         <p class="tag-subtitle">Producer @ Trek Media Studios</p>
@@ -212,8 +175,11 @@
                     <input type="text" id="beatPriceExclusive" placeholder="Exclusive Price ($)">
                 </div>
                 <div class="form-row">
-                    <input type="text" id="beatAudioUrl" placeholder="Audio URL (SoundCloud/YouTube)">
-                    <button id="addBeatBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Add Beat</button>
+                    <input type="text" id="beatAudioUrl" placeholder="Audio URL (SoundCloud/YouTube/GitHub)">
+                    <input type="text" id="beatThumbnailUrl" placeholder="Thumbnail URL (Optional)">
+                </div>
+                <div class="form-row">
+                    <button id="addBeatBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Add Beat to Store</button>
                 </div>
             </div>
 
@@ -438,6 +404,7 @@
     </div>
 
     <script src="script.js"></script>
+
 <!-- Hidden Admin Access Button -->
 <div class="admin-access-btn" id="adminAccessBtn">
     <i class="fas fa-lock"></i>
@@ -469,6 +436,9 @@
                 </div>
                 <div class="form-row">
                     <input type="text" id="adminBeatAudio" placeholder="Audio URL">
+                    <input type="text" id="adminBeatThumbnail" placeholder="Thumbnail URL (Optional)">
+                </div>
+                <div class="form-row">
                     <button id="adminAddBeat" class="btn btn-primary">
                         <i class="fas fa-plus"></i> Add Beat
                     </button>
