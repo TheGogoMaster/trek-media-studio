@@ -80,30 +80,23 @@
         </div>
     </section>
 
-    <!-- Image Upload Panel -->
-    <div class="image-upload-panel">
-        <div class="upload-section">
-            <h3><i class="fas fa-images"></i> Customize Website Images</h3>
-            <div class="upload-controls">
-                <div class="upload-group">
-                    <h4><i class="fas fa-image"></i> Background Image</h4>
-                    <input type="file" id="bgUpload" accept="image/*" hidden>
-                    <button class="btn-upload-img" onclick="document.getElementById('bgUpload').click()">
-                        <i class="fas fa-upload"></i> Change Background
-                    </button>
-                    <div class="image-preview" id="bgPreview">
-                        <img src="https://i.imgur.com/gcs6MBM.jpeg" alt="Current Studio Background">
-                        <div class="preview-overlay">
-                            <span>Current Background</span>
-                        </div>
-                    </div>
+<!-- Image Upload Panel - REMOVED FOR CLIENT VIEW -->
+<!--
+<div class="image-upload-panel">
+    <div class="upload-section">
+        <h3><i class="fas fa-images"></i> Customize Website Images</h3>
+        ... ALL UPLOAD CONTENT ...
+    </div>
+</div>
+-->
                 </div>
                 <div class="upload-group">
                     <h4><i class="fas fa-user-circle"></i> Profile Image</h4>
                     <input type="file" id="profileUpload" accept="image/*" hidden>
-                    <button class="btn-upload-img" onclick="document.getElementById('profileUpload').click()">
-                        <i class="fas fa-upload"></i> Change Profile
-                    </button>
+                    <!-- Profile upload button removed for client view -->
+		    <!-- <button class="btn-upload" id="uploadProfileBtn">
+    		    <i class="fas fa-camera"></i> Change Profile
+		    </button> -->
                     <div class="image-preview" id="profilePreview">
                         <img src="https://i.imgur.com/1TZwnGp.jpeg" alt="Current Profile Photo">
                         <div class="preview-overlay">
