@@ -449,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 genre: card.querySelector('.beat-info p:nth-child(1) strong').textContent,
                 bpm: card.querySelector('.beat-info p:nth-child(2) strong').textContent,
                 key: card.querySelector('.beat-info p:nth-child(3) strong').textContent,
-                lease: card.querySelector('.price-option:nth-child(1) .price').textContent,
+                lease: card.querySelector('.price-option:nth-child(1) .price').textContent.replace('$', ''),
                 exclusive: card.querySelector('.price-option:nth-child(2) .price').textContent,
                 audio: card.querySelector('.btn-preview').getAttribute('data-audio') || '#'
             });
