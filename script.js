@@ -1328,6 +1328,14 @@ if (window.location.hash === '#nthanda') {
         adminBtn.style.display = 'flex';
     }
 }
-// ==================== //
-// END OF ENHANCEMENTS
-// ==================== //
+
+// Wait for page to load, then check for #nthanda
+window.addEventListener('DOMContentLoaded', function() {
+    if (window.location.hash === '#nthanda') {
+        const adminBtn = document.querySelector('.admin-access-btn');
+        if (adminBtn) {
+            adminBtn.style.display = 'flex';
+            console.log('🔓 Admin unlocked via #nthanda');
+        }
+    }
+});
