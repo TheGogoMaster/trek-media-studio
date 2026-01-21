@@ -308,75 +308,144 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize audio player
     audioPlayer.init();
     
-    // ==================== BEAT MANAGEMENT ====================
+        // ==================== BEAT MANAGEMENT ====================
     const addBeatBtn = document.getElementById('addBeatBtn');
     const beatsGrid = document.getElementById('beatsGrid');
     
-    // Add beat functionality
-    if (addBeatBtn) {
-        addBeatBtn.addEventListener('click', function() {
-            const title = document.getElementById('beatTitle').value.trim();
-            const genre = document.getElementById('beatGenre').value.trim();
-            const bpm = document.getElementById('beatBPM').value.trim();
-            const key = document.getElementById('beatKey').value.trim();
-            const leasePrice = document.getElementById('beatPriceLease').value.trim() || '50';
-            const exclusivePrice = document.getElementById('beatPriceExclusive').value.trim() || '200';
-            const audioUrl = document.getElementById('beatAudioUrl').value.trim() || '#';
-            
-            // Basic validation
-            if (!title || !genre || !bpm || !key) {
-                showNotification('Please fill in all required fields: Title, Genre, BPM, and Key');
-                return;
+    // Load saved beats on page load
+    function loadSavedBeats() {
+        const saved = localStorage.getItem('userBeats');
+        if (saved) {
+            try {
+                const beats = JSON.parse(saved);
+                beatsGrid.innerHTML = '';
+                
+                beats.forEach(beat => {
+                    const beatCard = document.createElement('div');
+                    beatCard.className = 'beat-card';
+                    beatCard.innerHTML = `
+                        <div class="beat-header">
+                            <span class="beat-badge">MY BEAT</span>
+                            <h3 class="beat-title">${beat.title}</h3>
+                        </div>
+                        <div class="beat-info">
+                            <p><i class="fas fa-music"></i> Genre: <strong>${beat.genre}</strong></p>
+                            <p><i class="fas fa-tachometer-alt"></i> BPM: <strong>${beat.bpm}</strong></p>
+                            <p><i class="fas fa-key"></i> Key: <strong>${beat.key}</strong></p>
+                        </div>
+                        <div class="beat-pricing">
+                            <div class="price-option">
+                                <span class="price-label">Lease</span>
+                                <span class="price">${beat.lease}</span>
+                            </div>
+                            <div class="price-option">
+                                <span class="price-label">Exclusive</span>
+                                <span class="price">${beat.exclusive}</span>
+                            </div>
+                        </div>
+                        <div class="beat-actions">
+                            <button class="btn-preview" data-audio="${beat.audio || '#'}" data-title="${beat.title}">
+                                <i class="fas fa-play-circle"></i> Preview
+                            </button>
+                            <button class="btn-buy" data-title="${beat.title}">
+                                <i class="fas fa-shopping-cart"></i> Purchase
+                            </button>
+                        </div>
+                    `;
+                    beatsGrid.appendChild(beatCard);
+                });
+            } catch(e) {
+                console.log('No saved beats found');
             }
-            
-            // Create new beat card
-            const beatCard = document.createElement('div');
-            beatCard.className = 'beat-card';
-            beatCard.innerHTML = `
-                <div class="beat-header">
-                    <span class="beat-badge">NEW</span>
-                    <h3 class="beat-title">${title.toUpperCase()}</h3>
+        }
+    }
+    
+    // Load saved beats instead of example beats
+    loadSavedBeats();
+    
+    // Add beat functionality
+    addBeatBtn.addEventListener('click', function() {
+        const title = document.getElementById('beatTitle').value.trim();
+        const genre = document.getElementById('beatGenre').value.trim();
+        const bpm = document.getElementById('beatBPM').value.trim();
+        const key = document.getElementById('beatKey').value.trim();
+        const leasePrice = document.getElementById('beatPriceLease').value.trim() || '50';
+        const exclusivePrice = document.getElementById('beatPriceExclusive').value.trim() || '200';
+        const audioUrl = document.getElementById('beatAudioUrl').value.trim() || '#';
+        
+        // Basic validation
+        if (!title || !genre || !bpm || !key) {
+            showNotification('Please fill in all required fields: Title, Genre, BPM, and Key');
+            return;
+        }
+        
+        // Create new beat card
+        const beatCard = document.createElement('div');
+        beatCard.className = 'beat-card';
+        beatCard.innerHTML = `
+            <div class="beat-header">
+                <span class="beat-badge">NEW</span>
+                <h3 class="beat-title">${title.toUpperCase()}</h3>
+            </div>
+            <div class="beat-info">
+                <p><i class="fas fa-music"></i> Genre: <strong>${genre}</strong></p>
+                <p><i class="fas fa-tachometer-alt"></i> BPM: <strong>${bpm}</strong></p>
+                <p><i class="fas fa-key"></i> Key: <strong>${key}</strong></p>
+            </div>
+            <div class="beat-pricing">
+                <div class="price-option">
+                    <span class="price-label">Lease</span>
+                    <span class="price">$${leasePrice}</span>
                 </div>
-                <div class="beat-info">
-                    <p><i class="fas fa-music"></i> Genre: <strong>${genre}</strong></p>
-                    <p><i class="fas fa-tachometer-alt"></i> BPM: <strong>${bpm}</strong></p>
-                    <p><i class="fas fa-key"></i> Key: <strong>${key}</strong></p>
+                <div class="price-option">
+                    <span class="price-label">Exclusive</span>
+                    <span class="price">$${exclusivePrice}</span>
                 </div>
-                <div class="beat-pricing">
-                    <div class="price-option">
-                        <span class="price-label">Lease</span>
-                        <span class="price">$${leasePrice}</span>
-                    </div>
-                    <div class="price-option">
-                        <span class="price-label">Exclusive</span>
-                        <span class="price">$${exclusivePrice}</span>
-                    </div>
-                </div>
-                <div class="beat-actions">
-                    <button class="btn-preview" data-audio="${audioUrl}" data-title="${title}">
-                        <i class="fas fa-play-circle"></i> Preview
-                    </button>
-                    <button class="btn-buy" data-title="${title}">
-                        <i class="fas fa-shopping-cart"></i> Purchase
-                    </button>
-                </div>
-            `;
-            
-            // Add to grid at the beginning
-            beatsGrid.insertBefore(beatCard, beatsGrid.firstChild);
-            
-            // Clear form
-            document.getElementById('beatTitle').value = '';
-            document.getElementById('beatGenre').value = '';
-            document.getElementById('beatBPM').value = '';
-            document.getElementById('beatKey').value = '';
-            document.getElementById('beatPriceLease').value = '';
-            document.getElementById('beatPriceExclusive').value = '';
-            document.getElementById('beatAudioUrl').value = '';
-            
-            // Show success message
-            showNotification('Beat added successfully!');
+            </div>
+            <div class="beat-actions">
+                <button class="btn-preview" data-audio="${audioUrl}" data-title="${title}">
+                    <i class="fas fa-play-circle"></i> Preview
+                </button>
+                <button class="btn-buy" data-title="${title}">
+                    <i class="fas fa-shopping-cart"></i> Purchase
+                </button>
+            </div>
+        `;
+        
+        // Add to grid at the beginning
+        beatsGrid.insertBefore(beatCard, beatsGrid.firstChild);
+        
+        // Clear form
+        document.getElementById('beatTitle').value = '';
+        document.getElementById('beatGenre').value = '';
+        document.getElementById('beatBPM').value = '';
+        document.getElementById('beatKey').value = '';
+        document.getElementById('beatPriceLease').value = '';
+        document.getElementById('beatPriceExclusive').value = '';
+        document.getElementById('beatAudioUrl').value = '';
+        
+        // SAVE beats to localStorage
+        saveCurrentBeats();
+        
+        // Show success message
+        showNotification('Beat added and saved!');
+    });
+    
+    // Function to save ALL current beats
+    function saveCurrentBeats() {
+        const beats = [];
+        document.querySelectorAll('.beat-card').forEach(card => {
+            beats.push({
+                title: card.querySelector('.beat-title').textContent,
+                genre: card.querySelector('.beat-info p:nth-child(1) strong').textContent,
+                bpm: card.querySelector('.beat-info p:nth-child(2) strong').textContent,
+                key: card.querySelector('.beat-info p:nth-child(3) strong').textContent,
+                lease: card.querySelector('.price-option:nth-child(1) .price').textContent,
+                exclusive: card.querySelector('.price-option:nth-child(2) .price').textContent,
+                audio: card.querySelector('.btn-preview').getAttribute('data-audio') || '#'
+            });
         });
+        localStorage.setItem('userBeats', JSON.stringify(beats));
     }
     
     // Beat preview and purchase functionality
@@ -400,197 +469,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // ==================== PURCHASE MODAL ====================
-    const purchaseModal = document.getElementById('purchaseModal');
-    const closeModal = document.querySelector('.close-modal');
-    
-    function openPurchaseModal(beatTitle) {
-        document.getElementById('modalBeatTitle').textContent = beatTitle;
-        
-        // Update WhatsApp link with beat title
-        const whatsappBtn = document.querySelector('.btn-whatsapp');
-        const encodedTitle = encodeURIComponent(`Hi GogoMaster, I want to purchase the beat "${beatTitle}" - Please send me pricing and licensing details.`);
-        whatsappBtn.href = `https://wa.me/265996017545?text=${encodedTitle}`;
-        
-        // Update Email link with beat title
-        const emailBtn = document.querySelector('.btn-email');
-        const encodedSubject = encodeURIComponent(`Beat Purchase: ${beatTitle}`);
-        emailBtn.href = `mailto:iloventhanda@gmail.com?subject=${encodedSubject}&body=Hi%20GogoMaster,%0D%0A%0D%0AI%20would%20like%20to%20purchase%20the%20beat%20"${encodeURIComponent(beatTitle)}".%0D%0A%0D%0APlease%20send%20me%20the%20pricing%20and%20licensing%20details.%0D%0A%0D%0AThanks!`;
-        
-        purchaseModal.style.display = 'flex';
-    }
-    
-    function closePurchaseModal() {
-        purchaseModal.style.display = 'none';
-    }
-    
-    if (closeModal) {
-        closeModal.addEventListener('click', closePurchaseModal);
-    }
-    
-    // Close modal when clicking outside
-    window.addEventListener('click', function(e) {
-        if (e.target === purchaseModal) {
-            closePurchaseModal();
-        }
-    });
-    
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && purchaseModal.style.display === 'flex') {
-            closePurchaseModal();
-        }
-    });
-    
-    // ==================== CONTACT FORM ====================
-    const messageForm = document.getElementById('messageForm');
-    
-    if (messageForm) {
-        messageForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Get form values
-            const name = this.querySelector('input[type="text"]').value;
-            const email = this.querySelector('input[type="email"]').value;
-            const service = this.querySelector('select').value;
-            const message = this.querySelector('textarea').value;
-            
-            // Service names mapping
-            const serviceNames = {
-                'beat': 'Beat Purchase',
-                'mixing': 'Mixing/Mastering',
-                'recording': 'Studio Recording',
-                'lessons': 'Production Lessons',
-                'other': 'Other Inquiry'
-            };
-            
-            const serviceText = serviceNames[service] || 'General Inquiry';
-            
-            // Create mailto link
-            const mailtoLink = `mailto:iloventhanda@gmail.com?subject=${encodeURIComponent(`${serviceText} - ${name}`)}&body=${encodeURIComponent(
-`Name: ${name}
-Email: ${email}
-Service: ${serviceText}
-
-Message:
-${message}
-
----`
-            )}`;
-            
-            // Open email client
-            window.location.href = mailtoLink;
-            
-            // Reset form
-            this.reset();
-            
-            // Show confirmation
-            showNotification('Your email client will open. Please send the message to complete.');
-        });
-    }
-    
-    // ==================== INITIAL BEATS ====================
-    // Add example beats on page load
-    const exampleBeats = [
-        {
-            title: "MIDNIGHT DRIVE",
-            genre: "Trap",
-            bpm: "140",
-            key: "F Minor",
-            lease: "$50",
-            exclusive: "$200",
-            badge: "HOT"
-        },
-        {
-            title: "SUMMER VIBES",
-            genre: "R&B",
-            bpm: "92",
-            key: "A Major",
-            lease: "$40",
-            exclusive: "$180",
-            badge: "NEW"
-        },
-        {
-            title: "URBAN LEGEND",
-            genre: "Hip-Hop",
-            bpm: "85",
-            key: "C# Minor",
-            lease: "$45",
-            exclusive: "$190",
-            badge: "POPULAR"
-        },
-        {
-            title: "DARK MATTER",
-            genre: "Drill",
-            bpm: "145",
-            key: "G Minor",
-            lease: "$55",
-            exclusive: "$220",
-            badge: "TRENDING"
-        },
-        {
-            title: "GOLDEN HOUR",
-            genre: "Afrobeat",
-            bpm: "105",
-            key: "D Major",
-            lease: "$60",
-            exclusive: "$250",
-            badge: "NEW"
-        },
-        {
-            title: "NEON DREAMS",
-            genre: "Synthwave",
-            bpm: "128",
-            key: "E Minor",
-            lease: "$48",
-            exclusive: "$195",
-            badge: "HOT"
-        }
-    ];
-    
-    // Function to add example beats
-    function addExampleBeats() {
-        if (beatsGrid && beatsGrid.children.length === 0) {
-            exampleBeats.forEach(beat => {
-                const beatCard = document.createElement('div');
-                beatCard.className = 'beat-card';
-                beatCard.innerHTML = `
-                    <div class="beat-header">
-                        <span class="beat-badge">${beat.badge}</span>
-                        <h3 class="beat-title">${beat.title}</h3>
-                    </div>
-                    <div class="beat-info">
-                        <p><i class="fas fa-music"></i> Genre: <strong>${beat.genre}</strong></p>
-                        <p><i class="fas fa-tachometer-alt"></i> BPM: <strong>${beat.bpm}</strong></p>
-                        <p><i class="fas fa-key"></i> Key: <strong>${beat.key}</strong></p>
-                    </div>
-                    <div class="beat-pricing">
-                        <div class="price-option">
-                            <span class="price-label">Lease</span>
-                            <span class="price">${beat.lease}</span>
-                        </div>
-                        <div class="price-option">
-                            <span class="price-label">Exclusive</span>
-                            <span class="price">${beat.exclusive}</span>
-                        </div>
-                    </div>
-                    <div class="beat-actions">
-                        <button class="btn-preview" data-audio="#" data-title="${beat.title}">
-                            <i class="fas fa-play-circle"></i> Preview
-                        </button>
-                        <button class="btn-buy" data-title="${beat.title}">
-                            <i class="fas fa-shopping-cart"></i> Purchase
-                        </button>
-                    </div>
-                `;
-                
-                beatsGrid.appendChild(beatCard);
-            });
-        }
-    }
-    
-    // Don't add example beats - user will add their own
-// addExampleBeats();
+    // ==================== NO EXAMPLE BEATS ====================
+    // REMOVED: addExampleBeats() call
+    // Now using: loadSavedBeats() instead
     
     // ==================== ENHANCEMENTS ====================
     
