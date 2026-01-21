@@ -654,18 +654,27 @@ ${message}
         }
     });
     
-    // 2. Disable keyboard save shortcuts (BUT ALLOW F12 FOR DEBUGGING)
-    document.addEventListener('keydown', function(e) {
-        // ALLOW F12 - Remove this line to block F12 again
-        if (e.key === 'F12') return;
-        
-        if ((e.ctrlKey && e.key === 's') || 
-            (e.ctrlKey && e.shiftKey && e.key === 'S')) {
-            e.preventDefault();
-            showNotification('This action is disabled');
-            return false;
-        }
-    });
+   // 2. Disable keyboard save shortcuts
+document.addEventListener('keydown', function(e) {
+    // Allow F12 ONLY if #nthanda is in URL (for you)
+    if (e.key === 'F12' && window.location.hash === '#nthanda') {
+        return; // Let you use F12
+    }
+    
+    // Block F12 for everyone else
+    if (e.key === 'F12') {
+        e.preventDefault();
+        showNotification('Developer Tools disabled');
+        return false;
+    }
+    
+    if ((e.ctrlKey && e.key === 's') || 
+        (e.ctrlKey && e.shiftKey && e.key === 'S')) {
+        e.preventDefault();
+        showNotification('This action is disabled');
+        return false;
+    }
+});
     
     // ==================== ADMIN PANEL SYSTEM ====================
     const ADMIN_PASSWORD = "Mynthanda265*"; // You can change this password
