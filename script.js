@@ -589,8 +589,8 @@ ${message}
         }
     }
     
-    // Add example beats on page load
-    addExampleBeats();
+    // Don't add example beats - user will add their own
+// addExampleBeats();
     
     // ==================== ENHANCEMENTS ====================
     
