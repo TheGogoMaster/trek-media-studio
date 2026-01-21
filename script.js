@@ -1,6 +1,13 @@
 // Trek Media Studios Website - Complete JavaScript
+
+// Sync admin beats to website - DISABLED to keep user beats
+function syncBeatsToWebsite() {
+    console.log('Beat sync disabled - user beats preserved');
+    return; // Function stops here - doesn't clear user beats
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    // ==================== NOTIFICATION SYSTEM (MOVED TO TOP) ====================
+    // ==================== NOTIFICATION SYSTEM ====================
     function showNotification(message) {
         // Remove existing notification
         const existingNotification = document.querySelector('.notification');
@@ -308,7 +315,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize audio player
     audioPlayer.init();
     
-        // ==================== BEAT MANAGEMENT ====================
+    // ==================== BEAT MANAGEMENT ====================
     const addBeatBtn = document.getElementById('addBeatBtn');
     const beatsGrid = document.getElementById('beatsGrid');
     
@@ -364,72 +371,74 @@ document.addEventListener('DOMContentLoaded', function() {
     loadSavedBeats();
     
     // Add beat functionality
-    addBeatBtn.addEventListener('click', function() {
-        const title = document.getElementById('beatTitle').value.trim();
-        const genre = document.getElementById('beatGenre').value.trim();
-        const bpm = document.getElementById('beatBPM').value.trim();
-        const key = document.getElementById('beatKey').value.trim();
-        const leasePrice = document.getElementById('beatPriceLease').value.trim() || '50';
-        const exclusivePrice = document.getElementById('beatPriceExclusive').value.trim() || '200';
-        const audioUrl = document.getElementById('beatAudioUrl').value.trim() || '#';
-        
-        // Basic validation
-        if (!title || !genre || !bpm || !key) {
-            showNotification('Please fill in all required fields: Title, Genre, BPM, and Key');
-            return;
-        }
-        
-        // Create new beat card
-        const beatCard = document.createElement('div');
-        beatCard.className = 'beat-card';
-        beatCard.innerHTML = `
-            <div class="beat-header">
-                <span class="beat-badge">NEW</span>
-                <h3 class="beat-title">${title.toUpperCase()}</h3>
-            </div>
-            <div class="beat-info">
-                <p><i class="fas fa-music"></i> Genre: <strong>${genre}</strong></p>
-                <p><i class="fas fa-tachometer-alt"></i> BPM: <strong>${bpm}</strong></p>
-                <p><i class="fas fa-key"></i> Key: <strong>${key}</strong></p>
-            </div>
-            <div class="beat-pricing">
-                <div class="price-option">
-                    <span class="price-label">Lease</span>
-                    <span class="price">$${leasePrice}</span>
+    if (addBeatBtn) {
+        addBeatBtn.addEventListener('click', function() {
+            const title = document.getElementById('beatTitle').value.trim();
+            const genre = document.getElementById('beatGenre').value.trim();
+            const bpm = document.getElementById('beatBPM').value.trim();
+            const key = document.getElementById('beatKey').value.trim();
+            const leasePrice = document.getElementById('beatPriceLease').value.trim() || '50';
+            const exclusivePrice = document.getElementById('beatPriceExclusive').value.trim() || '200';
+            const audioUrl = document.getElementById('beatAudioUrl').value.trim() || '#';
+            
+            // Basic validation
+            if (!title || !genre || !bpm || !key) {
+                showNotification('Please fill in all required fields: Title, Genre, BPM, and Key');
+                return;
+            }
+            
+            // Create new beat card
+            const beatCard = document.createElement('div');
+            beatCard.className = 'beat-card';
+            beatCard.innerHTML = `
+                <div class="beat-header">
+                    <span class="beat-badge">NEW</span>
+                    <h3 class="beat-title">${title.toUpperCase()}</h3>
                 </div>
-                <div class="price-option">
-                    <span class="price-label">Exclusive</span>
-                    <span class="price">$${exclusivePrice}</span>
+                <div class="beat-info">
+                    <p><i class="fas fa-music"></i> Genre: <strong>${genre}</strong></p>
+                    <p><i class="fas fa-tachometer-alt"></i> BPM: <strong>${bpm}</strong></p>
+                    <p><i class="fas fa-key"></i> Key: <strong>${key}</strong></p>
                 </div>
-            </div>
-            <div class="beat-actions">
-                <button class="btn-preview" data-audio="${audioUrl}" data-title="${title}">
-                    <i class="fas fa-play-circle"></i> Preview
-                </button>
-                <button class="btn-buy" data-title="${title}">
-                    <i class="fas fa-shopping-cart"></i> Purchase
-                </button>
-            </div>
-        `;
-        
-        // Add to grid at the beginning
-        beatsGrid.insertBefore(beatCard, beatsGrid.firstChild);
-        
-        // Clear form
-        document.getElementById('beatTitle').value = '';
-        document.getElementById('beatGenre').value = '';
-        document.getElementById('beatBPM').value = '';
-        document.getElementById('beatKey').value = '';
-        document.getElementById('beatPriceLease').value = '';
-        document.getElementById('beatPriceExclusive').value = '';
-        document.getElementById('beatAudioUrl').value = '';
-        
-        // SAVE beats to localStorage
-        saveCurrentBeats();
-        
-        // Show success message
-        showNotification('Beat added and saved!');
-    });
+                <div class="beat-pricing">
+                    <div class="price-option">
+                        <span class="price-label">Lease</span>
+                        <span class="price">$${leasePrice}</span>
+                    </div>
+                    <div class="price-option">
+                        <span class="price-label">Exclusive</span>
+                        <span class="price">$${exclusivePrice}</span>
+                    </div>
+                </div>
+                <div class="beat-actions">
+                    <button class="btn-preview" data-audio="${audioUrl}" data-title="${title}">
+                        <i class="fas fa-play-circle"></i> Preview
+                    </button>
+                    <button class="btn-buy" data-title="${title}">
+                        <i class="fas fa-shopping-cart"></i> Purchase
+                    </button>
+                </div>
+            `;
+            
+            // Add to grid at the beginning
+            beatsGrid.insertBefore(beatCard, beatsGrid.firstChild);
+            
+            // Clear form
+            document.getElementById('beatTitle').value = '';
+            document.getElementById('beatGenre').value = '';
+            document.getElementById('beatBPM').value = '';
+            document.getElementById('beatKey').value = '';
+            document.getElementById('beatPriceLease').value = '';
+            document.getElementById('beatPriceExclusive').value = '';
+            document.getElementById('beatAudioUrl').value = '';
+            
+            // SAVE beats to localStorage
+            saveCurrentBeats();
+            
+            // Show success message
+            showNotification('Beat added and saved!');
+        });
+    }
     
     // Function to save ALL current beats
     function saveCurrentBeats() {
@@ -469,9 +478,94 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // ==================== NO EXAMPLE BEATS ====================
-    // REMOVED: addExampleBeats() call
-    // Now using: loadSavedBeats() instead
+    // ==================== PURCHASE MODAL ====================
+    const purchaseModal = document.getElementById('purchaseModal');
+    const closeModal = document.querySelector('.close-modal');
+    
+    function openPurchaseModal(beatTitle) {
+        document.getElementById('modalBeatTitle').textContent = beatTitle;
+        
+        // Update WhatsApp link with beat title
+        const whatsappBtn = document.querySelector('.btn-whatsapp');
+        const encodedTitle = encodeURIComponent(`Hi GogoMaster, I want to purchase the beat "${beatTitle}" - Please send me pricing and licensing details.`);
+        whatsappBtn.href = `https://wa.me/265996017545?text=${encodedTitle}`;
+        
+        // Update Email link with beat title
+        const emailBtn = document.querySelector('.btn-email');
+        const encodedSubject = encodeURIComponent(`Beat Purchase: ${beatTitle}`);
+        emailBtn.href = `mailto:iloventhanda@gmail.com?subject=${encodedSubject}&body=Hi%20GogoMaster,%0D%0A%0D%0AI%20would%20like%20to%20purchase%20the%20beat%20"${encodeURIComponent(beatTitle)}".%0D%0A%0D%0APlease%20send%20me%20the%20pricing%20and%20licensing%20details.%0D%0A%0D%0AThanks!`;
+        
+        purchaseModal.style.display = 'flex';
+    }
+    
+    function closePurchaseModal() {
+        purchaseModal.style.display = 'none';
+    }
+    
+    if (closeModal) {
+        closeModal.addEventListener('click', closePurchaseModal);
+    }
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(e) {
+        if (e.target === purchaseModal) {
+            closePurchaseModal();
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && purchaseModal.style.display === 'flex') {
+            closePurchaseModal();
+        }
+    });
+    
+    // ==================== CONTACT FORM ====================
+    const messageForm = document.getElementById('messageForm');
+    
+    if (messageForm) {
+        messageForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const name = this.querySelector('input[type="text"]').value;
+            const email = this.querySelector('input[type="email"]').value;
+            const service = this.querySelector('select').value;
+            const message = this.querySelector('textarea').value;
+            
+            // Service names mapping
+            const serviceNames = {
+                'beat': 'Beat Purchase',
+                'mixing': 'Mixing/Mastering',
+                'recording': 'Studio Recording',
+                'lessons': 'Production Lessons',
+                'other': 'Other Inquiry'
+            };
+            
+            const serviceText = serviceNames[service] || 'General Inquiry';
+            
+            // Create mailto link
+            const mailtoLink = `mailto:iloventhanda@gmail.com?subject=${encodeURIComponent(`${serviceText} - ${name}`)}&body=${encodeURIComponent(
+`Name: ${name}
+Email: ${email}
+Service: ${serviceText}
+
+Message:
+${message}
+
+---`
+            )}`;
+            
+            // Open email client
+            window.location.href = mailtoLink;
+            
+            // Reset form
+            this.reset();
+            
+            // Show confirmation
+            showNotification('Your email client will open. Please send the message to complete.');
+        });
+    }
     
     // ==================== ENHANCEMENTS ====================
     
@@ -535,27 +629,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-   // 2. Disable keyboard save shortcuts
-document.addEventListener('keydown', function(e) {
-    // Allow F12 ONLY if #nthanda is in URL (for you)
-    if (e.key === 'F12' && window.location.hash === '#nthanda') {
-        return; // Let you use F12
-    }
-    
-    // Block F12 for everyone else
-    if (e.key === 'F12') {
-        e.preventDefault();
-        showNotification('Developer Tools disabled');
-        return false;
-    }
-    
-    if ((e.ctrlKey && e.key === 's') || 
-        (e.ctrlKey && e.shiftKey && e.key === 'S')) {
-        e.preventDefault();
-        showNotification('This action is disabled');
-        return false;
-    }
-});
+    // 2. Disable keyboard save shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Block F12 (Developer Tools)
+        if (e.key === 'F12') {
+            e.preventDefault();
+            showNotification('Developer Tools disabled');
+            return false;
+        }
+        
+        if ((e.ctrlKey && e.key === 's') || 
+            (e.ctrlKey && e.shiftKey && e.key === 'S')) {
+            e.preventDefault();
+            showNotification('This action is disabled');
+            return false;
+        }
+    });
     
     // ==================== ADMIN PANEL SYSTEM ====================
     const ADMIN_PASSWORD = "Mynthanda265*"; // You can change this password
@@ -605,20 +694,6 @@ document.addEventListener('keydown', function(e) {
         const savedBeats = localStorage.getItem('adminBeats');
         if (savedBeats) {
             adminBeats = JSON.parse(savedBeats);
-        } else {
-            // Initialize with current beats from page
-            adminBeats = Array.from(document.querySelectorAll('.beat-card')).map(card => {
-                return {
-                    title: card.querySelector('.beat-title').textContent,
-                    genre: card.querySelector('.beat-info p:nth-child(1) strong').textContent,
-                    bpm: card.querySelector('.beat-info p:nth-child(2) strong').textContent,
-                    key: card.querySelector('.beat-info p:nth-child(3) strong').textContent,
-                    lease: card.querySelector('.price-option:nth-child(1) .price').textContent,
-                    exclusive: card.querySelector('.price-option:nth-child(2) .price').textContent,
-                    audio: card.querySelector('.btn-preview').getAttribute('data-audio') || '#'
-                };
-            });
-            saveAdminBeats();
         }
         
         // Load images from localStorage
@@ -697,54 +772,6 @@ document.addEventListener('keydown', function(e) {
         }
     }
     
-        // Sync admin beats to website - DISABLED to keep user beats
-    function syncBeatsToWebsite() {
-        console.log('Beat sync disabled - user beats preserved');
-        return; // Function stops here - doesn't clear user beats
-        
-        const beatsGrid = document.getElementById('beatsGrid');
-        if (!beatsGrid) return;
-        
-        // Clear existing beats (except example ones if needed)
-        beatsGrid.innerHTML = '';
-        
-        // Add beats from admin panel
-        adminBeats.forEach(beat => {
-            const beatCard = document.createElement('div');
-            beatCard.className = 'beat-card';
-            beatCard.innerHTML = `
-                <div class="beat-header">
-                    <span class="beat-badge">HOT</span>
-                    <h3 class="beat-title">${beat.title.toUpperCase()}</h3>
-                </div>
-                <div class="beat-info">
-                    <p><i class="fas fa-music"></i> Genre: <strong>${beat.genre}</strong></p>
-                    <p><i class="fas fa-tachometer-alt"></i> BPM: <strong>${beat.bpm}</strong></p>
-                    <p><i class="fas fa-key"></i> Key: <strong>${beat.key}</strong></p>
-                </div>
-                <div class="beat-pricing">
-                    <div class="price-option">
-                        <span class="price-label">Lease</span>
-                        <span class="price">${beat.lease}</span>
-                    </div>
-                    <div class="price-option">
-                        <span class="price-label">Exclusive</span>
-                        <span class="price">${beat.exclusive}</span>
-                    </div>
-                </div>
-                <div class="beat-actions">
-                    <button class="btn-preview" data-audio="${beat.audio || '#'}" data-title="${beat.title}">
-                        <i class="fas fa-play-circle"></i> Preview
-                    </button>
-                    <button class="btn-buy" data-title="${beat.title}">
-                        <i class="fas fa-shopping-cart"></i> Purchase
-                    </button>
-                </div>
-            `;
-            beatsGrid.appendChild(beatCard);
-        });
-    }
-    
     // Password authentication
     if (adminAccessBtn) {
         adminAccessBtn.addEventListener('click', () => {
@@ -784,7 +811,6 @@ document.addEventListener('keydown', function(e) {
         closeAdminBtn.addEventListener('click', () => {
             adminPanel.style.display = 'none';
             // DON'T sync - keep user beats
-            // syncBeatsToWebsite();
         });
     }
     
@@ -798,7 +824,6 @@ document.addEventListener('keydown', function(e) {
             if (adminPanel.style.display === 'block') {
                 adminPanel.style.display = 'none';
                 // DON'T sync - keep user beats
-                // syncBeatsToWebsite();
             }
         }
     });
@@ -812,7 +837,6 @@ document.addEventListener('keydown', function(e) {
         if (e.target === adminPanel) {
             adminPanel.style.display = 'none';
             // DON'T sync - keep user beats
-            // syncBeatsToWebsite();
         }
     });
     
@@ -1029,13 +1053,12 @@ document.addEventListener('keydown', function(e) {
         }, 1000);
     });
     
-    // ========== SECRET ADMIN ACCESS ========== (ADDED HERE)
+    // ========== SECRET ADMIN ACCESS ==========
     // Check for #nthanda when page loads
     if (window.location.hash === '#nthanda') {
         const adminBtn = document.querySelector('.admin-access-btn');
         if (adminBtn) {
             adminBtn.style.display = 'flex';
-            console.log('🔓 Admin unlocked via #nthanda');
         }
     }
     
