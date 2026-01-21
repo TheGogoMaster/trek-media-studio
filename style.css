@@ -919,6 +919,128 @@ h1, h2, h3 {
     width: 100%;
 }
 
+/* ==================== BEAT THUMBNAILS ==================== */
+.beat-thumbnail {
+    width: 100%;
+    height: 200px;
+    border-radius: 10px 10px 0 0;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--card-bg), #1a1a2e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.beat-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.beat-card:hover .beat-thumbnail img {
+    transform: scale(1.05);
+}
+
+.default-thumbnail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.default-thumbnail i {
+    font-size: 48px;
+    margin-bottom: 10px;
+    opacity: 0.5;
+}
+
+/* Beat card adjustment for thumbnail */
+.beat-card {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+}
+
+.beat-header {
+    margin-top: 15px;
+}
+
+/* Admin panel beat thumbnails */
+.beat-item-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.beat-item-thumb {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.beat-item-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.beat-item-thumb.default {
+    background: linear-gradient(135deg, var(--accent-red), #ff5500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.beat-item-thumb.default i {
+    font-size: 20px;
+}
+
+.beat-details {
+    flex: 1;
+}
+
+.beat-details h6 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+}
+
+.beat-details p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+/* Thumbnail input field styling */
+.form-group input[type="url"] {
+    width: 100%;
+    padding: 10px 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.form-group input[type="url"]:focus {
+    outline: none;
+    border-color: var(--accent-red);
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.1);
+}
+
+.form-group label i {
+    margin-right: 8px;
+    color: var(--accent-red);
+}
+/* ==================== END THUMBNAILS ==================== */
+
 /* Beats Grid */
 .beats-grid {
     display: grid;
@@ -1575,6 +1697,11 @@ h1, h2, h3 {
         font-size: 0.7rem;
         padding: 3px 8px;
     }
+    
+    /* Adjust thumbnail height on mobile */
+    .beat-thumbnail {
+        height: 150px;
+    }
 }
 
 /* Animations */
@@ -1604,7 +1731,10 @@ h1, h2, h3 {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #ff4040;
-}/* FIX PROFILE PICTURE */
+}
+
+/* ==================== FIXES ==================== */
+/* FIX PROFILE PICTURE */
 .profile-image img {
     object-fit: cover;
     object-position: center 10%;  /* Moves up a little */
@@ -1628,10 +1758,9 @@ html, body {
     padding: 0;
     width: 100%;
     height: 100%;
-}/* ==================== */
-/* ENHANCEMENTS - ADD AT BOTTOM */
-/* ==================== */
+}
 
+/* ==================== ENHANCEMENTS ==================== */
 /* 1. Active Navigation Highlight */
 .nav-links a.active {
     color: #ffd700 !important;
@@ -1653,7 +1782,9 @@ section {
 .service-card:hover, .beat-card:hover {
     transform: translateY(-10px) !important;
     box-shadow: 0 15px 30px rgba(255, 42, 42, 0.3) !important;
-}/* ==================== BEAT PROTECTION ==================== */
+}
+
+/* ==================== BEAT PROTECTION ==================== */
 .audio-player, .beat-card {
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -1669,8 +1800,9 @@ audio {
     height: 1px;
     pointer-events: none;
 }
+
 /* ==================== END PROTECTION ==================== */
-}
+
 /* Specialization Text Styling */
 .specialization {
     font-weight: 600;
@@ -1793,7 +1925,9 @@ audio {
     display: flex !important; /* KEEP THIS! */
     visibility: visible !important;
     opacity: 1 !important;
-}/* ==================== ADMIN PANEL STYLES ==================== */
+}
+
+/* ==================== ADMIN PANEL STYLES ==================== */
 /* Admin Access Button */
 .admin-access-btn {
     position: fixed;
@@ -2193,4 +2327,9 @@ audio {
 .upload-note,
 .add-beat-form:not(.admin-panel .add-beat-form) {
     display: none !important;
+}
+
+/* Fix form rows for thumbnail field */
+.form-row.full-width {
+    grid-template-columns: 1fr !important;
 }
