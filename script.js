@@ -419,7 +419,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </button>
                 </div>
             `;
-            
+            function saveCurrentBeats() {
             // Add to grid at the beginning
             beatsGrid.insertBefore(beatCard, beatsGrid.firstChild);
             
@@ -440,22 +440,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Function to save ALL current beats
-    function saveCurrentBeats() {
-        const beats = [];
-        document.querySelectorAll('.beat-card').forEach(card => {
-            beats.push({
-                title: card.querySelector('.beat-title').textContent,
-                genre: card.querySelector('.beat-info p:nth-child(1) strong').textContent,
-                bpm: card.querySelector('.beat-info p:nth-child(2) strong').textContent,
-                key: card.querySelector('.beat-info p:nth-child(3) strong').textContent,
-                lease: card.querySelector('.price-option:nth-child(1) .price').textContent.replace('$', ''),
-                exclusive: card.querySelector('.price-option:nth-child(2) .price').textContent,
-                audio: card.querySelector('.btn-preview').getAttribute('data-audio') || '#'
-            });
+   // Function to save ALL current beats
+function saveCurrentBeats() {
+    const beats = [];
+    document.querySelectorAll('.beat-card').forEach(card => {
+        beats.push({
+            title: card.querySelector('.beat-title').textContent,
+            genre: card.querySelector('.beat-info p:nth-child(1) strong').textContent,
+            bpm: card.querySelector('.beat-info p:nth-child(2) strong').textContent,
+            key: card.querySelector('.beat-info p:nth-child(3) strong').textContent,
+            lease: card.querySelector('.price-option:nth-child(1) .price').textContent.replace('$', ''),
+            exclusive: card.querySelector('.price-option:nth-child(2) .price').textContent.replace('$', ''),
+            audio: card.querySelector('.btn-preview').getAttribute('data-audio') || '#'
         });
-        localStorage.setItem('userBeats', JSON.stringify(beats));
-    }
+    });
+    localStorage.setItem('userBeats', JSON.stringify(beats));
+}
     
     // Beat preview and purchase functionality
     document.addEventListener('click', function(e) {
