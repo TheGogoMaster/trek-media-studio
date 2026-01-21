@@ -1155,3 +1155,54 @@ window.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+// ========== SECRET ADMIN BUTTON ==========
+// Check for #nthanda in URL and show button
+if (window.location.hash === '#nthanda') {
+    const btn = document.querySelector('.admin-access-btn');
+    if (btn) {
+        // Force show button by removing ALL CSS
+        btn.removeAttribute('style');
+        btn.style.cssText = `
+            display: flex !important;
+            position: fixed !important;
+            bottom: 20px !important;
+            right: 20px !important;
+            width: 50px !important;
+            height: 50px !important;
+            background: #ff2a2a !important;
+            color: white !important;
+            border-radius: 50% !important;
+            z-index: 9999 !important;
+            justify-content: center !important;
+            align-items: center !important;
+            cursor: pointer !important;
+            box-shadow: 0 4px 15px rgba(255, 42, 42, 0.4) !important;
+        `;
+    }
+}
+
+// Console command to unlock
+window.unlockAdmin = function() {
+    const btn = document.querySelector('.admin-access-btn');
+    if (btn) {
+        btn.removeAttribute('style');
+        btn.style.cssText = `
+            display: flex !important;
+            position: fixed !important;
+            bottom: 20px !important;
+            right: 20px !important;
+            width: 50px !important;
+            height: 50px !important;
+            background: #ff2a2a !important;
+            color: white !important;
+            border-radius: 50% !important;
+            z-index: 9999 !important;
+            justify-content: center !important;
+            align-items: center !important;
+            cursor: pointer !important;
+            box-shadow: 0 4px 15px rgba(255, 42, 42, 0.4) !important;
+        `;
+        alert('🔓 Admin unlocked! Click the lock icon.');
+    }
+};
