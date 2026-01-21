@@ -697,8 +697,11 @@ document.addEventListener('keydown', function(e) {
         }
     }
     
-    // Sync admin beats to website
+        // Sync admin beats to website - DISABLED to keep user beats
     function syncBeatsToWebsite() {
+        console.log('Beat sync disabled - user beats preserved');
+        return; // Function stops here - doesn't clear user beats
+        
         const beatsGrid = document.getElementById('beatsGrid');
         if (!beatsGrid) return;
         
@@ -780,8 +783,8 @@ document.addEventListener('keydown', function(e) {
     if (closeAdminBtn) {
         closeAdminBtn.addEventListener('click', () => {
             adminPanel.style.display = 'none';
-            // Sync changes to website
-            syncBeatsToWebsite();
+            // DON'T sync - keep user beats
+            // syncBeatsToWebsite();
         });
     }
     
@@ -794,7 +797,8 @@ document.addEventListener('keydown', function(e) {
             }
             if (adminPanel.style.display === 'block') {
                 adminPanel.style.display = 'none';
-                syncBeatsToWebsite();
+                // DON'T sync - keep user beats
+                // syncBeatsToWebsite();
             }
         }
     });
@@ -807,7 +811,8 @@ document.addEventListener('keydown', function(e) {
         }
         if (e.target === adminPanel) {
             adminPanel.style.display = 'none';
-            syncBeatsToWebsite();
+            // DON'T sync - keep user beats
+            // syncBeatsToWebsite();
         }
     });
     
