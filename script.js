@@ -877,8 +877,444 @@ window.addEventListener('load', function() {
     
     // Set initial active nav
     updateActiveNav();
+
+// ==================== ADMIN PANEL SYSTEM ====================
+const ADMIN_PASSWORD = "Mynthanda265*"; // You can change this password
+
+// Elements
+const adminAccessBtn = document.getElementById('adminAccessBtn');
+const passwordModal = document.getElementById('passwordModal');
+const adminPanel = document.getElementById('adminPanel');
+const adminPasswordInput = document.getElementById('adminPassword');
+const submitPasswordBtn = document.getElementById('submitPassword');
+const cancelPasswordBtn = document.getElementById('cancelPassword');
+const closeAdminBtn = document.querySelector('.close-admin');
+
+// Admin Beat Management
+const adminBeatTitle = document.getElementById('adminBeatTitle');
+const adminBeatGenre = document.getElementById('adminBeatGenre');
+const adminBeatBPM = document.getElementById('adminBeatBPM');
+const adminBeatKey = document.getElementById('adminBeatKey');
+const adminBeatLease = document.getElementById('adminBeatLease');
+const adminBeatExclusive = document.getElementById('adminBeatExclusive');
+const adminBeatAudio = document.getElementById('adminBeatAudio');
+const adminAddBeatBtn = document.getElementById('adminAddBeat');
+const adminBeatsList = document.getElementById('adminBeatsList');
+const beatCountSpan = document.getElementById('beatCount');
+
+// Admin Image Management
+const adminBgUpload = document.getElementById('adminBgUpload');
+const adminProfileUpload = document.getElementById('adminProfileUpload');
+const adminBgPreview = document.getElementById('adminBgPreview');
+const adminProfilePreview = document.getElementById('adminProfilePreview');
+const adminSaveImagesBtn = document.getElementById('adminSaveImages');
+const adminResetImagesBtn = document.getElementById('adminResetImages');
+
+// Data Management
+const exportDataBtn = document.getElementById('exportData');
+const importDataBtn = document.getElementById('importData');
+const clearAllBeatsBtn = document.getElementById('clearAllBeats');
+
+// Current admin data
+let adminCurrentBgImage = 'https://i.imgur.com/gcs6MBM.jpeg';
+let adminCurrentProfileImage = 'https://i.imgur.com/1TZwnGp.jpeg';
+let adminBeats = [];
+
+// Load saved admin data
+function loadAdminData() {
+    // Load beats from localStorage
+    const savedBeats = localStorage.getItem('adminBeats');
+    if (savedBeats) {
+        adminBeats = JSON.parse(savedBeats);
+    } else {
+        // Initialize with current beats from page
+        adminBeats = Array.from(document.querySelectorAll('.beat-card')).map(card => {
+            return {
+                title: card.querySelector('.beat-title').textContent,
+                genre: card.querySelector('.beat-info p:nth-child(1) strong').textContent,
+                bpm: card.querySelector('.beat-info p:nth-child(2) strong').textContent,
+                key: card.querySelector('.beat-info p:nth-child(3) strong').textContent,
+                lease: card.querySelector('.price-option:nth-child(1) .price').textContent,
+                exclusive: card.querySelector('.price-option:nth-child(2) .price').textContent,
+                audio: card.querySelector('.btn-preview').getAttribute('data-audio') || '#'
+            };
+        });
+        saveAdminBeats();
+    }
+    
+    // Load images from localStorage
+    const savedBg = localStorage.getItem('websiteBackground');
+    const savedProfile = localStorage.getItem('websiteProfile');
+    
+    if (savedBg) {
+        adminCurrentBgImage = savedBg;
+        updateImagePreview(adminBgPreview, savedBg, 'Current Background');
+    }
+    
+    if (savedProfile) {
+        adminCurrentProfileImage = savedProfile;
+        updateImagePreview(adminProfilePreview, savedProfile, 'Current Profile');
+    }
+    
+    updateBeatList();
+    updateBeatCount();
+}
+
+// Save beats to localStorage
+function saveAdminBeats() {
+    localStorage.setItem('adminBeats', JSON.stringify(adminBeats));
+}
+
+// Update beats list display
+function updateBeatList() {
+    adminBeatsList.innerHTML = '';
+    
+    adminBeats.forEach((beat, index) => {
+        const beatItem = document.createElement('div');
+        beatItem.className = 'beat-item';
+        beatItem.innerHTML = `
+            <div class="beat-info">
+                <h6>${beat.title}</h6>
+                <p>
+                    <span>${beat.genre}</span> | 
+                    <span>${beat.bpm} BPM</span> | 
+                    <span>${beat.key}</span>
+                </p>
+            </div>
+            <button class="remove-beat" data-index="${index}">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        adminBeatsList.appendChild(beatItem);
+    });
+    
+    // Add event listeners to remove buttons
+    document.querySelectorAll('.remove-beat').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const index = parseInt(this.getAttribute('data-index'));
+            adminBeats.splice(index, 1);
+            saveAdminBeats();
+            updateBeatList();
+            updateBeatCount();
+            showNotification('Beat removed from admin panel');
+        });
+    });
+}
+
+// Update beat count
+function updateBeatCount() {
+    beatCountSpan.textContent = adminBeats.length;
+}
+
+// Update image preview
+function updateImagePreview(previewElement, imageSrc, altText) {
+    if (previewElement) {
+        previewElement.innerHTML = `
+            <img src="${imageSrc}" alt="${altText}">
+            <div class="preview-overlay">
+                <span>${altText}</span>
+            </div>
+        `;
+    }
+}
+
+// Sync admin beats to website
+function syncBeatsToWebsite() {
+    const beatsGrid = document.getElementById('beatsGrid');
+    if (!beatsGrid) return;
+    
+    // Clear existing beats (except example ones if needed)
+    beatsGrid.innerHTML = '';
+    
+    // Add beats from admin panel
+    adminBeats.forEach(beat => {
+        const beatCard = document.createElement('div');
+        beatCard.className = 'beat-card';
+        beatCard.innerHTML = `
+            <div class="beat-header">
+                <span class="beat-badge">HOT</span>
+                <h3 class="beat-title">${beat.title.toUpperCase()}</h3>
+            </div>
+            <div class="beat-info">
+                <p><i class="fas fa-music"></i> Genre: <strong>${beat.genre}</strong></p>
+                <p><i class="fas fa-tachometer-alt"></i> BPM: <strong>${beat.bpm}</strong></p>
+                <p><i class="fas fa-key"></i> Key: <strong>${beat.key}</strong></p>
+            </div>
+            <div class="beat-pricing">
+                <div class="price-option">
+                    <span class="price-label">Lease</span>
+                    <span class="price">${beat.lease}</span>
+                </div>
+                <div class="price-option">
+                    <span class="price-label">Exclusive</span>
+                    <span class="price">${beat.exclusive}</span>
+                </div>
+            </div>
+            <div class="beat-actions">
+                <button class="btn-preview" data-audio="${beat.audio || '#'}" data-title="${beat.title}">
+                    <i class="fas fa-play-circle"></i> Preview
+                </button>
+                <button class="btn-buy" data-title="${beat.title}">
+                    <i class="fas fa-shopping-cart"></i> Purchase
+                </button>
+            </div>
+        `;
+        beatsGrid.appendChild(beatCard);
+    });
+}
+
+// Password authentication
+adminAccessBtn.addEventListener('click', () => {
+    passwordModal.style.display = 'flex';
+    adminPasswordInput.focus();
 });
 
+submitPasswordBtn.addEventListener('click', () => {
+    const enteredPassword = adminPasswordInput.value.trim();
+    
+    if (enteredPassword === ADMIN_PASSWORD) {
+        passwordModal.style.display = 'none';
+        adminPanel.style.display = 'block';
+        adminPasswordInput.value = '';
+        showNotification('Admin panel unlocked');
+        
+        // Load current data
+        loadAdminData();
+    } else {
+        showNotification('Incorrect password');
+        adminPasswordInput.value = '';
+        adminPasswordInput.focus();
+    }
+});
+
+cancelPasswordBtn.addEventListener('click', () => {
+    passwordModal.style.display = 'none';
+    adminPasswordInput.value = '';
+});
+
+closeAdminBtn.addEventListener('click', () => {
+    adminPanel.style.display = 'none';
+    // Sync changes to website
+    syncBeatsToWebsite();
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        if (passwordModal.style.display === 'flex') {
+            passwordModal.style.display = 'none';
+            adminPasswordInput.value = '';
+        }
+        if (adminPanel.style.display === 'block') {
+            adminPanel.style.display = 'none';
+            syncBeatsToWebsite();
+        }
+    }
+});
+
+// Close modal when clicking outside
+window.addEventListener('click', (e) => {
+    if (e.target === passwordModal) {
+        passwordModal.style.display = 'none';
+        adminPasswordInput.value = '';
+    }
+    if (e.target === adminPanel) {
+        adminPanel.style.display = 'none';
+        syncBeatsToWebsite();
+    }
+});
+
+// Add beat functionality
+adminAddBeatBtn.addEventListener('click', () => {
+    const title = adminBeatTitle.value.trim();
+    const genre = adminBeatGenre.value.trim();
+    const bpm = adminBeatBPM.value.trim();
+    const key = adminBeatKey.value.trim();
+    const lease = adminBeatLease.value.trim() || '$50';
+    const exclusive = adminBeatExclusive.value.trim() || '$200';
+    const audio = adminBeatAudio.value.trim() || '#';
+    
+    if (!title || !genre || !bpm || !key) {
+        showNotification('Please fill in all required fields');
+        return;
+    }
+    
+    const newBeat = {
+        title,
+        genre,
+        bpm,
+        key,
+        lease: lease.startsWith('$') ? lease : `$${lease}`,
+        exclusive: exclusive.startsWith('$') ? exclusive : `$${exclusive}`,
+        audio
+    };
+    
+    adminBeats.unshift(newBeat); // Add to beginning
+    saveAdminBeats();
+    updateBeatList();
+    updateBeatCount();
+    
+    // Clear form
+    adminBeatTitle.value = '';
+    adminBeatGenre.value = '';
+    adminBeatBPM.value = '';
+    adminBeatKey.value = '';
+    adminBeatLease.value = '';
+    adminBeatExclusive.value = '';
+    adminBeatAudio.value = '';
+    
+    showNotification('Beat added to admin panel');
+});
+
+// Image upload functionality
+adminBgUpload.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            adminCurrentBgImage = e.target.result;
+            updateImagePreview(adminBgPreview, adminCurrentBgImage, 'New Background');
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+adminProfileUpload.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            adminCurrentProfileImage = e.target.result;
+            updateImagePreview(adminProfilePreview, adminCurrentProfileImage, 'New Profile');
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Save images
+adminSaveImagesBtn.addEventListener('click', () => {
+    if (adminCurrentBgImage) {
+        localStorage.setItem('websiteBackground', adminCurrentBgImage);
+        document.querySelector('.hero-bg').style.backgroundImage = `url('${adminCurrentBgImage}')`;
+    }
+    
+    if (adminCurrentProfileImage) {
+        localStorage.setItem('websiteProfile', adminCurrentProfileImage);
+        document.getElementById('profileImage').innerHTML = `
+            <img src="${adminCurrentProfileImage}" alt="The GogoMaster">
+            <div class="profile-badge">
+                <i class="fas fa-certificate"></i> PRO
+            </div>
+        `;
+    }
+    
+    showNotification('Images saved and updated on website');
+});
+
+// Reset images
+adminResetImagesBtn.addEventListener('click', () => {
+    adminCurrentBgImage = 'https://i.imgur.com/gcs6MBM.jpeg';
+    adminCurrentProfileImage = 'https://i.imgur.com/1TZwnGp.jpeg';
+    
+    updateImagePreview(adminBgPreview, adminCurrentBgImage, 'Default Background');
+    updateImagePreview(adminProfilePreview, adminCurrentProfileImage, 'Default Profile');
+    
+    showNotification('Images reset to default');
+});
+
+// Export data
+exportDataBtn.addEventListener('click', () => {
+    const data = {
+        beats: adminBeats,
+        backgroundImage: adminCurrentBgImage,
+        profileImage: adminCurrentProfileImage,
+        exportDate: new Date().toISOString()
+    };
+    
+    const dataStr = JSON.stringify(data, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    const exportFileDefaultName = `trek-media-data-${new Date().toISOString().slice(0,10)}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+    
+    showNotification('Data exported successfully');
+});
+
+// Import data
+importDataBtn.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = e => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = event => {
+            try {
+                const data = JSON.parse(event.target.result);
+                
+                if (data.beats) {
+                    adminBeats = data.beats;
+                    saveAdminBeats();
+                    updateBeatList();
+                    updateBeatCount();
+                }
+                
+                if (data.backgroundImage) {
+                    adminCurrentBgImage = data.backgroundImage;
+                    updateImagePreview(adminBgPreview, adminCurrentBgImage, 'Imported Background');
+                }
+                
+                if (data.profileImage) {
+                    adminCurrentProfileImage = data.profileImage;
+                    updateImagePreview(adminProfilePreview, adminCurrentProfileImage, 'Imported Profile');
+                }
+                
+                showNotification('Data imported successfully');
+            } catch (error) {
+                showNotification('Error importing file. Invalid format.');
+            }
+        };
+        
+        reader.readAsText(file);
+    };
+    
+    input.click();
+});
+
+// Clear all beats
+clearAllBeatsBtn.addEventListener('click', () => {
+    if (confirm('Are you sure you want to clear ALL beats? This cannot be undone.')) {
+        adminBeats = [];
+        saveAdminBeats();
+        updateBeatList();
+        updateBeatCount();
+        showNotification('All beats cleared');
+    }
+});
+
+// Load admin data when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize previews
+    updateImagePreview(adminBgPreview, adminCurrentBgImage, 'Current Background');
+    updateImagePreview(adminProfilePreview, adminCurrentProfileImage, 'Current Profile');
+    
+    // Load beats from page on first load
+    setTimeout(loadAdminData, 1000);
+});
+
+// ==================== END ADMIN PANEL SYSTEM ====================
+});
+
+// Secret admin access - only you can see it
+if (window.location.hash === '#nthanda') {
+    document.querySelector('.admin-access-btn').style.display = 'flex';
+}
 // ==================== //
 // END OF ENHANCEMENTS
 // ==================== //
