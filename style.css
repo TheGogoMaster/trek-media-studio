@@ -1804,7 +1804,7 @@ audio {
     background: var(--accent-red);
     color: white;
     border-radius: 50%;
-     display: none !important; 
+    display: none;
     align-items: center;
     justify-content: center;
     cursor: pointer;
