@@ -1311,9 +1311,22 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==================== END ADMIN PANEL SYSTEM ====================
 });
 
-// Secret admin access - only you can see it
+// ========== SECRET ADMIN ACCESS ==========
+// Type in console: unlockAdmin()
+window.unlockAdmin = function() {
+    const adminBtn = document.querySelector('.admin-access-btn');
+    if (adminBtn) {
+        adminBtn.style.display = 'flex';
+        alert('🔓 Admin unlocked! Click the lock icon.');
+    }
+};
+
+// OR use secret URL with #nthanda
 if (window.location.hash === '#nthanda') {
-    document.querySelector('.admin-access-btn').style.display = 'flex';
+    const adminBtn = document.querySelector('.admin-access-btn');
+    if (adminBtn) {
+        adminBtn.style.display = 'flex';
+    }
 }
 // ==================== //
 // END OF ENHANCEMENTS
