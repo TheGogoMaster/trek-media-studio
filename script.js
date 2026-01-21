@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // ==================== IMAGE UPLOAD MANAGEMENT ====================
+    /* ==================== IMAGE UPLOAD MANAGEMENT ====================
     const bgUpload = document.getElementById('bgUpload');
     const profileUpload = document.getElementById('profileUpload');
     const saveImagesBtn = document.getElementById('saveImagesBtn');
@@ -199,6 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
             updateImagePreview(profilePreview, savedProfile, 'Current Profile');
         }
     }
+*/
     
     // ==================== NAVIGATION ====================
     const menuToggle = document.querySelector('.menu-toggle');
