@@ -1133,20 +1133,9 @@ ${message}
             showNotification('Welcome to Trek Media Studios! 🎵');
         }, 1000);
     });
-});
-
-// ========== SECRET ADMIN ACCESS ==========
-// Type in console: unlockAdmin()
-window.unlockAdmin = function() {
-    const adminBtn = document.querySelector('.admin-access-btn');
-    if (adminBtn) {
-        adminBtn.style.display = 'flex';
-        alert('🔓 Admin unlocked! Click the lock icon.');
-    }
-};
-
-// OR use secret URL with #nthanda - FIXED: Check on page load
-window.addEventListener('DOMContentLoaded', function() {
+    
+    // ========== SECRET ADMIN ACCESS ========== (ADDED HERE)
+    // Check for #nthanda when page loads
     if (window.location.hash === '#nthanda') {
         const adminBtn = document.querySelector('.admin-access-btn');
         if (adminBtn) {
@@ -1154,55 +1143,13 @@ window.addEventListener('DOMContentLoaded', function() {
             console.log('🔓 Admin unlocked via #nthanda');
         }
     }
+    
+    // Console command
+    window.unlockAdmin = function() {
+        const adminBtn = document.querySelector('.admin-access-btn');
+        if (adminBtn) {
+            adminBtn.style.display = 'flex';
+            alert('🔓 Admin unlocked! Click the lock icon.');
+        }
+    };
 });
-
-// ========== SECRET ADMIN BUTTON ==========
-// Check for #nthanda in URL and show button
-if (window.location.hash === '#nthanda') {
-    const btn = document.querySelector('.admin-access-btn');
-    if (btn) {
-        // Force show button by removing ALL CSS
-        btn.removeAttribute('style');
-        btn.style.cssText = `
-            display: flex !important;
-            position: fixed !important;
-            bottom: 20px !important;
-            right: 20px !important;
-            width: 50px !important;
-            height: 50px !important;
-            background: #ff2a2a !important;
-            color: white !important;
-            border-radius: 50% !important;
-            z-index: 9999 !important;
-            justify-content: center !important;
-            align-items: center !important;
-            cursor: pointer !important;
-            box-shadow: 0 4px 15px rgba(255, 42, 42, 0.4) !important;
-        `;
-    }
-}
-
-// Console command to unlock
-window.unlockAdmin = function() {
-    const btn = document.querySelector('.admin-access-btn');
-    if (btn) {
-        btn.removeAttribute('style');
-        btn.style.cssText = `
-            display: flex !important;
-            position: fixed !important;
-            bottom: 20px !important;
-            right: 20px !important;
-            width: 50px !important;
-            height: 50px !important;
-            background: #ff2a2a !important;
-            color: white !important;
-            border-radius: 50% !important;
-            z-index: 9999 !important;
-            justify-content: center !important;
-            align-items: center !important;
-            cursor: pointer !important;
-            box-shadow: 0 4px 15px rgba(255, 42, 42, 0.4) !important;
-        `;
-        alert('🔓 Admin unlocked! Click the lock icon.');
-    }
-};
