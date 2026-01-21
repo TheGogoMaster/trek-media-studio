@@ -2194,8 +2194,3 @@ audio {
 .add-beat-form:not(.admin-panel .add-beat-form) {
     display: none !important;
 }
-
-/* Hide admin lock button completely */
-.admin-access-btn {
-    display: none !important;
-}
