@@ -355,11 +355,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Create beat card function
+    // Create beat card function WITH THUMBNAIL SUPPORT
     function createBeatCard(beat) {
         const beatCard = document.createElement('div');
         beatCard.className = 'beat-card';
+        
+        // Check if beat has thumbnail
+        const thumbnailHTML = beat.thumbnail ? 
+            `<div class="beat-thumbnail">
+                <img src="${beat.thumbnail}" alt="${beat.title}" onerror="this.src='https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400&h=225&fit=crop'">
+            </div>` :
+            `<div class="beat-thumbnail">
+                <div class="default-thumbnail">
+                    <i class="fas fa-music"></i>
+                    <span>${beat.genre || 'BEAT'}</span>
+                </div>
+            </div>`;
+        
         beatCard.innerHTML = `
+            ${thumbnailHTML}
             <div class="beat-header">
                 <span class="beat-badge">MY BEAT</span>
                 <h3 class="beat-title">${beat.title}</h3>
@@ -417,7 +431,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load saved beats instead of example beats
     loadSavedBeats();
     
-    // Add beat functionality - FIXED VERSION
+    // Add beat functionality - UPDATED WITH THUMBNAIL SUPPORT
     if (addBeatBtn) {
         addBeatBtn.addEventListener('click', function() {
             const title = document.getElementById('beatTitle').value.trim();
@@ -427,6 +441,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const leasePrice = document.getElementById('beatPriceLease').value.trim() || '50';
             const exclusivePrice = document.getElementById('beatPriceExclusive').value.trim() || '200';
             const audioUrl = document.getElementById('beatAudioUrl').value.trim() || '#';
+            const thumbnailUrl = document.getElementById('beatThumbnailUrl').value.trim() || '';
             
             // Basic validation
             if (!title || !genre || !bpm || !key) {
@@ -442,7 +457,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 key: key,
                 lease: leasePrice,
                 exclusive: exclusivePrice,
-                audio: audioUrl
+                audio: audioUrl,
+                thumbnail: thumbnailUrl
             };
             
             // Create and add beat card
@@ -457,6 +473,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('beatPriceLease').value = '';
             document.getElementById('beatPriceExclusive').value = '';
             document.getElementById('beatAudioUrl').value = '';
+            document.getElementById('beatThumbnailUrl').value = '';
             
             // Save beats to localStorage
             saveCurrentBeats();
@@ -490,6 +507,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const priceText = card.querySelector('.price-option:nth-child(1) .price').textContent;
             const exclusiveText = card.querySelector('.price-option:nth-child(2) .price').textContent;
             
+            // Get thumbnail if exists
+            let thumbnail = '';
+            const thumbnailImg = card.querySelector('.beat-thumbnail img');
+            if (thumbnailImg && thumbnailImg.src && !thumbnailImg.src.includes('unsplash.com')) {
+                thumbnail = thumbnailImg.src;
+            }
+            
             beats.push({
                 title: card.querySelector('.beat-title').textContent,
                 genre: card.querySelector('.beat-info p:nth-child(1) strong').textContent,
@@ -497,7 +521,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 key: card.querySelector('.beat-info p:nth-child(3) strong').textContent,
                 lease: priceText.replace('$', ''),
                 exclusive: exclusiveText.replace('$', ''),
-                audio: card.querySelector('.btn-preview').getAttribute('data-audio') || '#'
+                audio: card.querySelector('.btn-preview').getAttribute('data-audio') || '#',
+                thumbnail: thumbnail
             });
         });
         localStorage.setItem('userBeats', JSON.stringify(beats));
@@ -683,7 +708,7 @@ ${message}
     const cancelPasswordBtn = document.getElementById('cancelPassword');
     const closeAdminBtn = document.querySelector('.close-admin');
     
-    // Admin Beat Management
+    // Admin Beat Management - UPDATED WITH THUMBNAIL
     const adminBeatTitle = document.getElementById('adminBeatTitle');
     const adminBeatGenre = document.getElementById('adminBeatGenre');
     const adminBeatBPM = document.getElementById('adminBeatBPM');
@@ -691,6 +716,7 @@ ${message}
     const adminBeatLease = document.getElementById('adminBeatLease');
     const adminBeatExclusive = document.getElementById('adminBeatExclusive');
     const adminBeatAudio = document.getElementById('adminBeatAudio');
+    const adminBeatThumbnail = document.getElementById('adminBeatThumbnail'); // NEW FIELD
     const adminAddBeatBtn = document.getElementById('adminAddBeat');
     const adminBeatsList = document.getElementById('adminBeatsList');
     const beatCountSpan = document.getElementById('beatCount');
@@ -751,14 +777,23 @@ ${message}
         adminBeats.forEach((beat, index) => {
             const beatItem = document.createElement('div');
             beatItem.className = 'beat-item';
+            
+            // Show thumbnail if exists
+            const thumbnailHTML = beat.thumbnail ? 
+                `<img src="${beat.thumbnail}" class="beat-item-thumb" alt="${beat.title}">` : 
+                '<div class="beat-item-thumb default"><i class="fas fa-music"></i></div>';
+            
             beatItem.innerHTML = `
-                <div class="beat-info">
-                    <h6>${beat.title}</h6>
-                    <p>
-                        <span>${beat.genre}</span> | 
-                        <span>${beat.bpm} BPM</span> | 
-                        <span>${beat.key}</span>
-                    </p>
+                <div class="beat-item-info">
+                    ${thumbnailHTML}
+                    <div class="beat-details">
+                        <h6>${beat.title}</h6>
+                        <p>
+                            <span>${beat.genre}</span> | 
+                            <span>${beat.bpm} BPM</span> | 
+                            <span>${beat.key}</span>
+                        </p>
+                    </div>
                 </div>
                 <button class="remove-beat" data-index="${index}">
                     <i class="fas fa-times"></i>
@@ -865,7 +900,7 @@ ${message}
         }
     });
     
-    // Add beat functionality - FIXED TO ALSO SHOW ON WEBSITE
+    // Add beat functionality - UPDATED WITH THUMBNAIL
     if (adminAddBeatBtn) {
         adminAddBeatBtn.addEventListener('click', () => {
             const title = adminBeatTitle.value.trim();
@@ -875,6 +910,7 @@ ${message}
             const lease = adminBeatLease.value.trim() || '$50';
             const exclusive = adminBeatExclusive.value.trim() || '$200';
             const audio = adminBeatAudio.value.trim() || '#';
+            const thumbnail = adminBeatThumbnail.value.trim() || '';
             
             if (!title || !genre || !bpm || !key) {
                 showNotification('Please fill in all required fields');
@@ -888,7 +924,8 @@ ${message}
                 key,
                 lease: lease.startsWith('$') ? lease : `$${lease}`,
                 exclusive: exclusive.startsWith('$') ? exclusive : `$${exclusive}`,
-                audio
+                audio,
+                thumbnail
             };
             
             // ========== FIX 1: ADD TO ADMIN PANEL ==========
@@ -909,7 +946,8 @@ ${message}
                 key: key,
                 lease: lease.startsWith('$') ? lease.replace('$', '') : lease,
                 exclusive: exclusive.startsWith('$') ? exclusive.replace('$', '') : exclusive,
-                audio: audio
+                audio: audio,
+                thumbnail: thumbnail
             });
             
             // Save website beats
@@ -928,6 +966,7 @@ ${message}
             adminBeatLease.value = '';
             adminBeatExclusive.value = '';
             adminBeatAudio.value = '';
+            adminBeatThumbnail.value = '';
             
             showNotification('✅ Beat added to both admin panel and website!');
         });
@@ -1066,15 +1105,32 @@ ${message}
         });
     }
     
-    // Clear all beats
+    // Clear all beats - FIXED VERSION (Now clears from website too!)
     if (clearAllBeatsBtn) {
         clearAllBeatsBtn.addEventListener('click', () => {
-            if (confirm('Are you sure you want to clear ALL beats from admin panel? This cannot be undone.')) {
+            if (confirm('Are you sure you want to clear ALL beats from admin panel AND website? This cannot be undone.')) {
+                // Clear admin beats
                 adminBeats = [];
                 saveAdminBeats();
                 updateBeatList();
                 updateBeatCount();
-                showNotification('All beats cleared from admin panel');
+                
+                // ========== CRITICAL FIX: ALSO CLEAR WEBSITE BEATS ==========
+                // Clear website beats from localStorage
+                localStorage.removeItem('userBeats');
+                
+                // Clear website display
+                if (beatsGrid) {
+                    beatsGrid.innerHTML = `
+                        <div class="no-beats-message" style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-secondary);">
+                            <i class="fas fa-music" style="font-size: 48px; margin-bottom: 20px; opacity: 0.3;"></i>
+                            <h3>No beats yet</h3>
+                            <p>Add your first beat using the form above!</p>
+                        </div>
+                    `;
+                }
+                
+                showNotification('✅ All beats cleared from both admin panel and website!');
             }
         });
     }
