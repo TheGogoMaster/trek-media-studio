@@ -3,6 +3,36 @@
 // With All Requested Features from Old Version
 // ============================================
 
+// ============================================
+// MOBILE AUDIO UNLOCK
+// ============================================
+(function() {
+    // Unlock audio on first user interaction
+    function unlockAudio() {
+        document.body.removeEventListener('touchstart', unlockAudio);
+        document.body.removeEventListener('click', unlockAudio);
+        
+        try {
+            // Create and play a silent buffer
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+                const audioContext = new AudioContext();
+                const buffer = audioContext.createBuffer(1, 1, 22050);
+                const source = audioContext.createBufferSource();
+                source.buffer = buffer;
+                source.connect(audioContext.destination);
+                source.start(0);
+            }
+        } catch(e) {
+            console.log("Audio unlock failed (non-critical):", e);
+        }
+    }
+    
+    // Listen for first user interaction
+    document.body.addEventListener('touchstart', unlockAudio, { once: true });
+    document.body.addEventListener('click', unlockAudio, { once: true });
+})();
+
 // FIREBASE CONFIGURATION
 const firebaseConfig = {
     apiKey: "AIzaSyD2tQzsNMtLOciLMokNofyCW93C06Qoj_k",
@@ -563,15 +593,69 @@ function renderBeats() {
         beatsGrid.appendChild(beatCard);
     });
     
-   // Add event listeners
+   // Add event listeners WITH MOBILE AUTO-PLAY
 document.querySelectorAll('.btn-preview').forEach(btn => {
     btn.addEventListener('click', function() {
         const audioUrl = this.getAttribute('data-audio');
         const beatTitle = this.getAttribute('data-title');
-        audioPlayer.loadAudio(audioUrl, beatTitle);
-        audioPlayer.play(); //
+        
+        // Create new audio for mobile compatibility
+        const audio = new Audio(audioUrl);
+        audio.volume = 0.7;
+        audio.preload = 'auto';
+        
+        // Try to play immediately
+        const playPromise = audio.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                // Success! Update player
+                audioPlayer.audio = audio;
+                audioPlayer.isPlaying = true;
+                audioPlayer.currentAudioUrl = audioUrl;
+                audioPlayer.currentBeatTitle = beatTitle;
+                document.getElementById('nowPlaying').textContent = beatTitle;
+                document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i>';
+                document.getElementById('progressBar').style.width = '0%';
+                
+                // Handle playback updates
+                audio.addEventListener('timeupdate', function() {
+                    if (audio.duration) {
+                        const progress = (audio.currentTime / audio.duration) * 100;
+                        document.getElementById('progressBar').style.width = `${progress}%`;
+                        document.getElementById('currentTime').textContent = 
+                            formatAudioTime(audio.currentTime);
+                        document.getElementById('totalTime').textContent = 
+                            formatAudioTime(audio.duration);
+                    }
+                });
+                
+                // Handle audio end
+                audio.addEventListener('ended', function() {
+                    audioPlayer.isPlaying = false;
+                    document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i>';
+                });
+                
+            }).catch(error => {
+                // Mobile blocked auto-play - use normal player
+                console.log("Auto-play blocked, using fallback");
+                audioPlayer.loadAudio(audioUrl, beatTitle);
+                showNotification("Tap the play button above to listen");
+            });
+        } else {
+            // Fallback for browsers without promise support
+            audioPlayer.loadAudio(audioUrl, beatTitle);
+            audioPlayer.play();
+        }
     });
 });
+
+// Helper function for time formatting
+function formatAudioTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+}
     
     document.querySelectorAll('.btn-buy').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -629,18 +713,62 @@ function renderMixes() {
         mixesGrid.appendChild(mixCard);
     });
     
-        // Add event listeners for mixes
-    document.querySelectorAll('.btn-listen').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const index = parseInt(e.currentTarget.dataset.index);
-            playBeat(index);
-            // AUTO-PLAY: Add this line ↓
-            if (currentAudio) currentAudio.play().then(() => {
-                isPlaying = true;
+       // Mixes preview with mobile auto-play
+document.querySelectorAll('.btn-listen').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const audioUrl = this.getAttribute('data-audio');
+        const mixTitle = this.getAttribute('data-title');
+        
+        // Create new audio for mobile compatibility
+        const audio = new Audio(audioUrl);
+        audio.volume = 0.7;
+        audio.preload = 'auto';
+        
+        // Try to play immediately
+        const playPromise = audio.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                // Success! Update player
+                audioPlayer.audio = audio;
+                audioPlayer.isPlaying = true;
+                audioPlayer.currentAudioUrl = audioUrl;
+                audioPlayer.currentBeatTitle = mixTitle;
+                document.getElementById('nowPlaying').textContent = mixTitle;
                 document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i>';
+                document.getElementById('progressBar').style.width = '0%';
+                
+                // Handle playback updates
+                audio.addEventListener('timeupdate', function() {
+                    if (audio.duration) {
+                        const progress = (audio.currentTime / audio.duration) * 100;
+                        document.getElementById('progressBar').style.width = `${progress}%`;
+                        document.getElementById('currentTime').textContent = 
+                            formatAudioTime(audio.currentTime);
+                        document.getElementById('totalTime').textContent = 
+                            formatAudioTime(audio.duration);
+                    }
+                });
+                
+                // Handle audio end
+                audio.addEventListener('ended', function() {
+                    audioPlayer.isPlaying = false;
+                    document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i>';
+                });
+                
+            }).catch(error => {
+                // Mobile blocked auto-play - use normal player
+                console.log("Auto-play blocked, using fallback");
+                audioPlayer.loadAudio(audioUrl, mixTitle);
+                showNotification("Tap the play button above to listen");
             });
-        });
+        } else {
+            // Fallback for browsers without promise support
+            audioPlayer.loadAudio(audioUrl, mixTitle);
+            audioPlayer.play();
+        }
     });
+});
 }
 
 function renderFeedback() {
@@ -1411,3 +1539,4 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("Website initialized successfully with all requested features!");
 
 });
+
