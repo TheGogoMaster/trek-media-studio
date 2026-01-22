@@ -563,14 +563,15 @@ function renderBeats() {
         beatsGrid.appendChild(beatCard);
     });
     
-    // Add event listeners
-    document.querySelectorAll('.btn-preview').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const audioUrl = this.getAttribute('data-audio');
-            const beatTitle = this.getAttribute('data-title');
-            audioPlayer.loadAudio(audioUrl, beatTitle);
-        });
+   // Add event listeners
+document.querySelectorAll('.btn-preview').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const audioUrl = this.getAttribute('data-audio');
+        const beatTitle = this.getAttribute('data-title');
+        audioPlayer.loadAudio(audioUrl, beatTitle);
+        audioPlayer.play(); //
     });
+});
     
     document.querySelectorAll('.btn-buy').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -628,12 +629,16 @@ function renderMixes() {
         mixesGrid.appendChild(mixCard);
     });
     
-    // Add event listeners for mixes
+        // Add event listeners for mixes
     document.querySelectorAll('.btn-listen').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const audioUrl = this.getAttribute('data-audio');
-            const mixTitle = this.getAttribute('data-title');
-            audioPlayer.loadAudio(audioUrl, mixTitle);
+        btn.addEventListener('click', (e) => {
+            const index = parseInt(e.currentTarget.dataset.index);
+            playBeat(index);
+            // AUTO-PLAY: Add this line ↓
+            if (currentAudio) currentAudio.play().then(() => {
+                isPlaying = true;
+                document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i>';
+            });
         });
     });
 }
@@ -1404,4 +1409,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
     
     console.log("Website initialized successfully with all requested features!");
+
 });
