@@ -964,6 +964,16 @@ h1, h2, h3 {
     color: var(--accent-red);
 }
 
+.btn-preview.playing {
+    border-color: var(--accent-red);
+    background: var(--accent-red);
+    color: white;
+}
+
+.btn-preview.playing i {
+    color: white;
+}
+
 .btn-buy {
     background-color: var(--accent-red);
     color: var(--text-light);
@@ -1121,6 +1131,15 @@ h1, h2, h3 {
 .btn-listen:hover {
     background-color: #778da9;
     transform: translateY(-2px);
+}
+
+.btn-listen.playing {
+    background: var(--accent-red);
+    color: white;
+}
+
+.btn-listen.playing i {
+    color: white;
 }
 
 /* Loading State */
@@ -2388,4 +2407,5 @@ section {
     .admin-section .form-row {
         grid-template-columns: 1fr;
     }
+
 }
