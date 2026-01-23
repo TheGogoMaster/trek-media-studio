@@ -17,16 +17,17 @@
 }
 
 [data-theme="light"] {
-    --primary-dark: #f8f8f8;
-    --secondary-dark: #f0f0f0;
-    --accent-red: #d32f2f;
-    --accent-gold: #c8a415;
-    --text-light: #2a2a2a;
+    /* Light Theme - Softer Professional */
+    --primary-dark: #f5f5f5;
+    --secondary-dark: #eeeeee;
+    --accent-red: #c62828;
+    --accent-gold: #b8860b;
+    --text-light: #333333;
     --text-gray: #666666;
     --card-bg: #ffffff;
-    --border-color: #e0e0e0;
-    --hero-bg: linear-gradient(135deg, rgba(248, 248, 248, 0.97), rgba(240, 240, 240, 0.97));
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    --border-color: #dddddd;
+    --hero-bg: linear-gradient(135deg, rgba(245, 245, 245, 0.97), rgba(238, 238, 238, 0.97));
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 [data-theme="light"] .hero {
@@ -2324,27 +2325,3 @@ section {
     font-size: 0.9rem;
 }
 
-[data-theme="light"] {
-    /* Softer, more comfortable light theme */
-    --primary-dark: #f8f8f8;
-    --secondary-dark: #f0f0f0;
-    --accent-red: #c62828;
-    --accent-gold: #b8860b;
-    --text-light: #333333;
-    --text-gray: #666666;
-    --card-bg: #ffffff;
-    --border-color: #e0e0e0;
-    --hero-bg: linear-gradient(135deg, rgba(248, 248, 248, 0.97), rgba(240, 240, 240, 0.97));
-}
-
-[data-theme="light"] .hero {
-    background: var(--hero-bg), linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%) !important;
-}
-
-[data-theme="light"] .service-card,
-[data-theme="light"] .beat-card,
-[data-theme="light"] .contact-item {
-    background: linear-gradient(145deg, #ffffff, #fafafa);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-}
