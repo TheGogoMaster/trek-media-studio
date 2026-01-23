@@ -32,12 +32,19 @@ const firebaseConfig = {
     measurementId: "G-WJ58P3X3ER"
 };
 
-firebase.initializeApp(firebaseConfig);
+// FIXED FIREBASE INITIALIZATION
+try {
+    firebase.initializeApp(firebaseConfig);
+    console.log("Firebase connected successfully");
+} catch (error) {
+    console.error("Firebase initialization error:", error);
+    showNotification("⚠️ Database connection issue. Beats may not load.");
+}
+
 const database = firebase.database();
 const beatsRef = database.ref('beats');
 const mixesRef = database.ref('mixes');
 const feedbackRef = database.ref('feedback');
-
 let currentAdminUser = null;
 
 function initGoogleLogin() {
@@ -868,15 +875,21 @@ function initAdminPanel() {
     const closeAdminBtn = document.querySelector('.close-admin');
     
     adminAccessBtn.style.display = 'none';
-    
+
+// Check URL hash on page load
+if (window.location.hash === '#nthanda') {
+    adminAccessBtn.style.display = 'flex';
+}
+
+// Listen for hash changes
+window.addEventListener('hashchange', function() {
     if (window.location.hash === '#nthanda') {
         adminAccessBtn.style.display = 'flex';
-        sessionStorage.setItem('adminUnlocked', 'true');
+        showNotification('🔓 Admin access available');
+    } else {
+        adminAccessBtn.style.display = 'none';
     }
-    
-    if (sessionStorage.getItem('adminUnlocked') === 'true') {
-        adminAccessBtn.style.display = 'flex';
-    }
+});
     
     adminAccessBtn.addEventListener('click', () => {
         if (firebase.auth().currentUser) {
