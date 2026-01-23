@@ -7,13 +7,11 @@
 // MOBILE AUDIO UNLOCK
 // ============================================
 (function() {
-    // Unlock audio on first user interaction
     function unlockAudio() {
         document.body.removeEventListener('touchstart', unlockAudio);
         document.body.removeEventListener('click', unlockAudio);
         
         try {
-            // Create and play a silent buffer
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             if (AudioContext) {
                 const audioContext = new AudioContext();
@@ -28,7 +26,6 @@
         }
     }
     
-    // Listen for first user interaction
     document.body.addEventListener('touchstart', unlockAudio, { once: true });
     document.body.addEventListener('click', unlockAudio, { once: true });
 })();
@@ -56,24 +53,25 @@ const feedbackRef = database.ref('feedback');
 // GLOBAL VARIABLES
 // ============================================
 let currentAudio = null;
+let currentPlayingButton = null;
+let currentPlayingCardId = null;
 let isPlaying = false;
 let currentBeatIndex = -1;
 let beats = [];
 let mixes = [];
 let feedbacks = [];
-const ADMIN_PASSWORD = "Mynthanda265*"; // Old admin password
+const ADMIN_PASSWORD = "Mynthanda265*";
+let editingBeatId = null;
 
 // ============================================
-// NOTIFICATION SYSTEM (FROM OLD VERSION)
+// NOTIFICATION SYSTEM
 // ============================================
 function showNotification(message) {
-    // Remove existing notification
     const existingNotification = document.querySelector('.notification');
     if (existingNotification) {
         existingNotification.remove();
     }
     
-    // Create new notification
     const notification = document.createElement('div');
     notification.className = 'notification';
     notification.innerHTML = `
@@ -89,7 +87,6 @@ function showNotification(message) {
         setTimeout(() => notification.remove(), 300);
     });
     
-    // Auto remove after 5 seconds
     setTimeout(() => {
         if (notification.parentNode) {
             notification.style.animation = 'slideOut 0.3s ease';
@@ -99,16 +96,14 @@ function showNotification(message) {
 }
 
 // ============================================
-// THEME MANAGEMENT (WITH LOCALSTORAGE)
+// THEME MANAGEMENT
 // ============================================
 function initThemeSwitcher() {
     const themeBtns = document.querySelectorAll('.theme-btn');
     
-    // Load saved theme from localStorage
     const savedTheme = localStorage.getItem('websiteTheme') || 'dark';
     document.body.setAttribute('data-theme', savedTheme);
     
-    // Set active theme button
     themeBtns.forEach(btn => {
         if (btn.getAttribute('data-theme') === savedTheme) {
             btn.classList.add('active');
@@ -117,22 +112,17 @@ function initThemeSwitcher() {
         }
     });
     
-    // Theme switching functionality
     themeBtns.forEach(button => {
         button.addEventListener('click', function() {
             const theme = this.getAttribute('data-theme');
             
-            // Update theme
             document.body.setAttribute('data-theme', theme);
             
-            // Update active button
             themeBtns.forEach(btn => btn.classList.remove('active'));
             this.classList.add('active');
             
-            // Save to localStorage
             localStorage.setItem('websiteTheme', theme);
             
-            // Show notification
             showNotification(`Theme changed to ${theme.charAt(0).toUpperCase() + theme.slice(1)} Mode`);
         });
     });
@@ -145,7 +135,6 @@ function initNavigation() {
     const menuToggle = document.querySelector('.menu-toggle');
     const navLinks = document.querySelector('.nav-links');
     
-    // Mobile menu toggle
     if (menuToggle) {
         menuToggle.addEventListener('click', function() {
             navLinks.classList.toggle('active');
@@ -154,7 +143,6 @@ function initNavigation() {
         });
     }
     
-    // Smooth scrolling for navigation links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
@@ -164,13 +152,11 @@ function initNavigation() {
             
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
-                // Close mobile menu if open
                 navLinks.classList.remove('active');
                 if (menuToggle) {
                     menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
                 }
                 
-                // Smooth scroll to target
                 window.scrollTo({
                     top: targetElement.offsetTop - 80,
                     behavior: 'smooth'
@@ -179,7 +165,6 @@ function initNavigation() {
         });
     });
     
-    // Close mobile menu when clicking outside
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.navbar') && navLinks.classList.contains('active')) {
             navLinks.classList.remove('active');
@@ -191,7 +176,7 @@ function initNavigation() {
 }
 
 // ============================================
-// ACTIVE NAVIGATION HIGHLIGHT (FROM OLD)
+// ACTIVE NAVIGATION HIGHLIGHT
 // ============================================
 function initActiveNavHighlight() {
     function updateActiveNav() {
@@ -222,7 +207,7 @@ function initActiveNavHighlight() {
 }
 
 // ============================================
-// SCROLL ANIMATIONS (FROM OLD)
+// SCROLL ANIMATIONS
 // ============================================
 function initScrollAnimations() {
     const elements = document.querySelectorAll('.service-card, .beat-card, .stat, .mix-card, .feedback-item');
@@ -246,10 +231,9 @@ function initScrollAnimations() {
 }
 
 // ============================================
-// BEAT PROTECTION (FROM OLD)
+// BEAT PROTECTION
 // ============================================
 function initBeatProtection() {
-    // 1. Disable right-click on beats and mixes
     document.addEventListener('contextmenu', function(e) {
         if (e.target.closest('.audio-player') || e.target.closest('.beat-card') || e.target.closest('.mix-card')) {
             e.preventDefault();
@@ -257,9 +241,7 @@ function initBeatProtection() {
         }
     });
     
-    // 2. Disable keyboard save shortcuts
     document.addEventListener('keydown', function(e) {
-        // Block F12 (Developer Tools)
         if (e.key === 'F12') {
             e.preventDefault();
             showNotification('Developer Tools disabled');
@@ -277,7 +259,7 @@ function initBeatProtection() {
 }
 
 // ============================================
-// AUDIO PLAYER WITH FADE EFFECTS (FROM OLD)
+// AUDIO PLAYER WITH FADE EFFECTS
 // ============================================
 let audioPlayer = {
     audio: null,
@@ -290,12 +272,10 @@ let audioPlayer = {
         this.audio = new Audio();
         this.audio.volume = 0.7;
         
-        // Player controls
         const playBtn = document.getElementById('playBtn');
         const progressContainer = document.querySelector('.progress-container');
         const volumeSlider = document.getElementById('volumeSlider');
         
-        // Play/Pause button
         playBtn.addEventListener('click', () => {
             if (!this.currentAudioUrl) {
                 showNotification('Please select a track to preview first');
@@ -309,7 +289,6 @@ let audioPlayer = {
             }
         });
         
-        // Progress bar click
         progressContainer.addEventListener('click', (e) => {
             if (!this.currentAudioUrl || !this.audio.duration) return;
             
@@ -318,17 +297,14 @@ let audioPlayer = {
             this.audio.currentTime = pos * this.audio.duration;
         });
         
-        // Volume control
         volumeSlider.addEventListener('input', (e) => {
             this.audio.volume = e.target.value / 100;
         });
         
-        // Audio ended
         this.audio.addEventListener('ended', () => {
             this.stop();
         });
         
-        // Initialize progress update
         this.startProgressUpdate();
     },
     
@@ -379,18 +355,15 @@ let audioPlayer = {
         this.currentAudioUrl = url;
         this.currentTrackTitle = title;
         
-        // Update UI
         document.getElementById('nowPlaying').textContent = title;
         document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i>';
         document.getElementById('progressBar').style.width = '0%';
         document.getElementById('currentTime').textContent = '0:00';
         document.getElementById('totalTime').textContent = '0:00';
         
-        // Load the audio
         this.audio.src = url;
         this.isPlaying = false;
         
-        // When audio is loaded, update total time
         this.audio.addEventListener('loadedmetadata', () => {
             document.getElementById('totalTime').textContent = this.formatTime(this.audio.duration);
         });
@@ -404,7 +377,7 @@ let audioPlayer = {
 };
 
 // ============================================
-// CLOUD BEAT MANAGEMENT (FIREBASE)
+// CLOUD BEAT MANAGEMENT
 // ============================================
 function loadBeatsFromCloud() {
     const beatsGrid = document.getElementById('beatsGrid');
@@ -415,12 +388,10 @@ function loadBeatsFromCloud() {
         const data = snapshot.val();
         
         if (data) {
-            // Convert object to array
             Object.keys(data).forEach(key => {
                 beats.push({ id: key, ...data[key] });
             });
             
-            // Sort beats by timestamp if available
             beats.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
         }
         
@@ -448,7 +419,7 @@ function addBeatToCloud(beatData) {
 }
 
 // ============================================
-// MIXES MANAGEMENT (NEW FEATURE)
+// MIXES MANAGEMENT
 // ============================================
 function loadMixesFromCloud() {
     const mixesGrid = document.getElementById('mixesGrid');
@@ -487,7 +458,7 @@ function addMixToCloud(mixData) {
 }
 
 // ============================================
-// FEEDBACK MANAGEMENT (NEW FEATURE)
+// FEEDBACK MANAGEMENT
 // ============================================
 function loadFeedbackFromCloud() {
     feedbackRef.on('value', (snapshot) => {
@@ -551,6 +522,7 @@ function renderBeats() {
         
         const beatCard = document.createElement('div');
         beatCard.className = 'beat-card';
+        beatCard.dataset.id = beat.id;
         beatCard.innerHTML = `
             <div class="beat-thumbnail">
                 ${thumbnailUrl ? 
@@ -593,69 +565,47 @@ function renderBeats() {
         beatsGrid.appendChild(beatCard);
     });
     
-   // Add event listeners WITH MOBILE AUTO-PLAY
-document.querySelectorAll('.btn-preview').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const audioUrl = this.getAttribute('data-audio');
-        const beatTitle = this.getAttribute('data-title');
-        
-        // Create new audio for mobile compatibility
-        const audio = new Audio(audioUrl);
-        audio.volume = 0.7;
-        audio.preload = 'auto';
-        
-        // Try to play immediately
-        const playPromise = audio.play();
-        
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                // Success! Update player
-                audioPlayer.audio = audio;
-                audioPlayer.isPlaying = true;
-                audioPlayer.currentAudioUrl = audioUrl;
-                audioPlayer.currentBeatTitle = beatTitle;
-                document.getElementById('nowPlaying').textContent = beatTitle;
-                document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i>';
-                document.getElementById('progressBar').style.width = '0%';
-                
-                // Handle playback updates
-                audio.addEventListener('timeupdate', function() {
-                    if (audio.duration) {
-                        const progress = (audio.currentTime / audio.duration) * 100;
-                        document.getElementById('progressBar').style.width = `${progress}%`;
-                        document.getElementById('currentTime').textContent = 
-                            formatAudioTime(audio.currentTime);
-                        document.getElementById('totalTime').textContent = 
-                            formatAudioTime(audio.duration);
-                    }
-                });
-                
-                // Handle audio end
-                audio.addEventListener('ended', function() {
-                    audioPlayer.isPlaying = false;
-                    document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i>';
-                });
-                
-            }).catch(error => {
-                // Mobile blocked auto-play - use normal player
-                console.log("Auto-play blocked, using fallback");
-                audioPlayer.loadAudio(audioUrl, beatTitle);
-                showNotification("Tap the play button above to listen");
-            });
-        } else {
-            // Fallback for browsers without promise support
+    document.querySelectorAll('.btn-preview').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const audioUrl = this.getAttribute('data-audio');
+            const beatTitle = this.getAttribute('data-title');
+            const beatId = this.closest('.beat-card').dataset.id;
+            
+            const playIcon = this.querySelector('i');
+            
+            if (currentPlayingCardId === beatId && currentAudio && !currentAudio.paused) {
+                currentAudio.pause();
+                playIcon.className = 'fas fa-play';
+                currentPlayingCardId = null;
+                return;
+            }
+            
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+            
+            if (currentPlayingButton && currentPlayingButton !== this) {
+                const prevIcon = currentPlayingButton.querySelector('i');
+                if (prevIcon) prevIcon.className = 'fas fa-play';
+            }
+            
+            currentAudio = new Audio(audioUrl);
+            currentAudio.play();
+            
+            playIcon.className = 'fas fa-pause';
+            currentPlayingButton = this;
+            currentPlayingCardId = beatId;
+            
             audioPlayer.loadAudio(audioUrl, beatTitle);
             audioPlayer.play();
-        }
+            
+            currentAudio.onended = function() {
+                playIcon.className = 'fas fa-play';
+                currentPlayingCardId = null;
+            };
+        });
     });
-});
-
-// Helper function for time formatting
-function formatAudioTime(seconds) {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-}
     
     document.querySelectorAll('.btn-buy').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -684,6 +634,7 @@ function renderMixes() {
     mixes.forEach((mix, index) => {
         const mixCard = document.createElement('div');
         mixCard.className = 'mix-card';
+        mixCard.dataset.id = mix.id;
         mixCard.innerHTML = `
             <div class="mix-thumbnail">
                 ${mix.thumbnail ? 
@@ -713,62 +664,47 @@ function renderMixes() {
         mixesGrid.appendChild(mixCard);
     });
     
-       // Mixes preview with mobile auto-play
-document.querySelectorAll('.btn-listen').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const audioUrl = this.getAttribute('data-audio');
-        const mixTitle = this.getAttribute('data-title');
-        
-        // Create new audio for mobile compatibility
-        const audio = new Audio(audioUrl);
-        audio.volume = 0.7;
-        audio.preload = 'auto';
-        
-        // Try to play immediately
-        const playPromise = audio.play();
-        
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                // Success! Update player
-                audioPlayer.audio = audio;
-                audioPlayer.isPlaying = true;
-                audioPlayer.currentAudioUrl = audioUrl;
-                audioPlayer.currentBeatTitle = mixTitle;
-                document.getElementById('nowPlaying').textContent = mixTitle;
-                document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i>';
-                document.getElementById('progressBar').style.width = '0%';
-                
-                // Handle playback updates
-                audio.addEventListener('timeupdate', function() {
-                    if (audio.duration) {
-                        const progress = (audio.currentTime / audio.duration) * 100;
-                        document.getElementById('progressBar').style.width = `${progress}%`;
-                        document.getElementById('currentTime').textContent = 
-                            formatAudioTime(audio.currentTime);
-                        document.getElementById('totalTime').textContent = 
-                            formatAudioTime(audio.duration);
-                    }
-                });
-                
-                // Handle audio end
-                audio.addEventListener('ended', function() {
-                    audioPlayer.isPlaying = false;
-                    document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i>';
-                });
-                
-            }).catch(error => {
-                // Mobile blocked auto-play - use normal player
-                console.log("Auto-play blocked, using fallback");
-                audioPlayer.loadAudio(audioUrl, mixTitle);
-                showNotification("Tap the play button above to listen");
-            });
-        } else {
-            // Fallback for browsers without promise support
+    document.querySelectorAll('.btn-listen').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const audioUrl = this.getAttribute('data-audio');
+            const mixTitle = this.getAttribute('data-title');
+            const mixId = this.closest('.mix-card').dataset.id;
+            
+            const playIcon = this.querySelector('i');
+            
+            if (currentPlayingCardId === mixId && currentAudio && !currentAudio.paused) {
+                currentAudio.pause();
+                playIcon.className = 'fas fa-play';
+                currentPlayingCardId = null;
+                return;
+            }
+            
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+            
+            if (currentPlayingButton && currentPlayingButton !== this) {
+                const prevIcon = currentPlayingButton.querySelector('i');
+                if (prevIcon) prevIcon.className = 'fas fa-play';
+            }
+            
+            currentAudio = new Audio(audioUrl);
+            currentAudio.play();
+            
+            playIcon.className = 'fas fa-pause';
+            currentPlayingButton = this;
+            currentPlayingCardId = mixId;
+            
             audioPlayer.loadAudio(audioUrl, mixTitle);
             audioPlayer.play();
-        }
+            
+            currentAudio.onended = function() {
+                playIcon.className = 'fas fa-play';
+                currentPlayingCardId = null;
+            };
+        });
     });
-});
 }
 
 function renderFeedback() {
@@ -847,12 +783,10 @@ function openPurchaseModal(beatTitle) {
     modalTitle.textContent = beatTitle;
     modal.style.display = 'flex';
     
-    // Update WhatsApp link
     const whatsappBtn = modal.querySelector('.btn-whatsapp');
     const encodedTitle = encodeURIComponent(beatTitle);
     whatsappBtn.href = `https://wa.me/265996017545?text=Hi%20GogoMaster,%20I%20want%20to%20purchase%20the%20beat%20"${encodedTitle}"`;
     
-    // Update email link
     const emailBtn = modal.querySelector('.btn-email');
     emailBtn.href = `mailto:iloventhanda@gmail.com?subject=Beat Purchase: ${encodedTitle}`;
 }
@@ -897,7 +831,6 @@ function initContactForm() {
             
             const serviceText = serviceNames[service] || 'General Inquiry';
             
-            // Create mailto link
             const mailtoLink = `mailto:iloventhanda@gmail.com?subject=${encodeURIComponent(`${serviceText} - ${name}`)}&body=${encodeURIComponent(
 `Name: ${name}
 Email: ${email}
@@ -909,13 +842,10 @@ ${message}
 ---`
             )}`;
             
-            // Open email client
             window.location.href = mailtoLink;
             
-            // Reset form
             this.reset();
             
-            // Show confirmation
             showNotification('Your email client will open. Please send the message to complete.');
         });
     }
@@ -939,16 +869,13 @@ function initFeedbackForm() {
                 message: document.getElementById('feedbackMessage').value.trim()
             };
             
-            // Validate
             if (!feedbackData.name || !feedbackData.rating || !feedbackData.message) {
                 showNotification('Please fill in all required fields');
                 return;
             }
             
-            // Add to cloud
             addFeedbackToCloud(feedbackData).then(success => {
                 if (success) {
-                    // Clear form
                     feedbackForm.reset();
                     showNotification('Thank you for your feedback!');
                 }
@@ -969,28 +896,23 @@ function initAdminPanel() {
     const adminPasswordInput = document.getElementById('adminPassword');
     const closeAdminBtn = document.querySelector('.close-admin');
     
-    // SECRET ADMIN ACCESS: Check for #nthanda URL
     if (window.location.hash === '#nthanda') {
         adminAccessBtn.style.display = 'flex';
         showNotification('🔓 Admin access unlocked! Click the lock icon.');
     }
     
-    // Console command for admin access
     window.unlockAdmin = function() {
         adminAccessBtn.style.display = 'flex';
         showNotification('🔓 Admin unlocked! Click the lock icon.');
     };
     
-    // Show admin access button
     adminAccessBtn.style.display = 'flex';
     
-    // Admin access button click
     adminAccessBtn.addEventListener('click', () => {
         passwordModal.style.display = 'flex';
         adminPasswordInput.focus();
     });
     
-    // Submit password
     submitPasswordBtn.addEventListener('click', () => {
         const password = adminPasswordInput.value.trim();
         
@@ -1000,7 +922,6 @@ function initAdminPanel() {
             adminPasswordInput.value = '';
             showNotification('Admin panel unlocked');
             
-            // Load current data
             updateAdminBeatList();
             updateAdminMixList();
             updateAdminFeedbackList();
@@ -1012,18 +933,15 @@ function initAdminPanel() {
         }
     });
     
-    // Cancel password
     cancelPasswordBtn.addEventListener('click', () => {
         passwordModal.style.display = 'none';
         adminPasswordInput.value = '';
     });
     
-    // Close admin panel
     closeAdminBtn.addEventListener('click', () => {
         adminPanel.style.display = 'none';
     });
     
-    // Close on escape key
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             passwordModal.style.display = 'none';
@@ -1031,7 +949,6 @@ function initAdminPanel() {
         }
     });
     
-    // Close modal when clicking outside
     window.addEventListener('click', (e) => {
         if (e.target === passwordModal) {
             passwordModal.style.display = 'none';
@@ -1042,12 +959,10 @@ function initAdminPanel() {
         }
     });
     
-    // Initialize admin functions
     initAdminFunctions();
 }
 
 function initAdminFunctions() {
-    // Admin add beat
     const adminAddBeatBtn = document.getElementById('adminAddBeat');
     if (adminAddBeatBtn) {
         adminAddBeatBtn.addEventListener('click', async (e) => {
@@ -1069,24 +984,34 @@ function initAdminFunctions() {
                 return;
             }
             
-            const success = await addBeatToCloud(beatData);
-            if (success) {
-                // Clear form
-                document.getElementById('adminBeatTitle').value = '';
-                document.getElementById('adminBeatGenre').value = '';
-                document.getElementById('adminBeatBPM').value = '';
-                document.getElementById('adminBeatKey').value = '';
-                document.getElementById('adminBeatLease').value = '';
-                document.getElementById('adminBeatExclusive').value = '';
-                document.getElementById('adminBeatAudio').value = '';
-                document.getElementById('adminBeatThumbnail').value = '';
-                
-                showNotification('Beat added to cloud!');
+            if (editingBeatId) {
+                beatsRef.child(editingBeatId).update(beatData)
+                    .then(() => {
+                        showNotification('Beat updated successfully!');
+                        resetBeatForm();
+                        editingBeatId = null;
+                    })
+                    .catch(error => {
+                        showNotification('Error updating beat: ' + error.message);
+                    });
+            } else {
+                const success = await addBeatToCloud(beatData);
+                if (success) {
+                    document.getElementById('adminBeatTitle').value = '';
+                    document.getElementById('adminBeatGenre').value = '';
+                    document.getElementById('adminBeatBPM').value = '';
+                    document.getElementById('adminBeatKey').value = '';
+                    document.getElementById('adminBeatLease').value = '';
+                    document.getElementById('adminBeatExclusive').value = '';
+                    document.getElementById('adminBeatAudio').value = '';
+                    document.getElementById('adminBeatThumbnail').value = '';
+                    
+                    showNotification('Beat added to cloud!');
+                }
             }
         });
     }
     
-    // Admin add mix
     const adminAddMixBtn = document.getElementById('adminAddMix');
     if (adminAddMixBtn) {
         adminAddMixBtn.addEventListener('click', async (e) => {
@@ -1108,7 +1033,6 @@ function initAdminFunctions() {
             
             const success = await addMixToCloud(mixData);
             if (success) {
-                // Clear form
                 document.getElementById('adminMixTitle').value = '';
                 document.getElementById('adminMixGenre').value = '';
                 document.getElementById('adminMixClient').value = '';
@@ -1121,10 +1045,7 @@ function initAdminFunctions() {
         });
     }
     
-    // Image management
     initImageManagement();
-    
-    // Data export/import
     initDataManagement();
 }
 
@@ -1146,15 +1067,46 @@ function updateAdminBeatList() {
                 <h6>${beat.title}</h6>
                 <p>${beat.genre} • ${beat.bpm} BPM • ${beat.key}</p>
             </div>
-            <button class="remove-beat" data-id="${beat.id}">
-                <i class="fas fa-trash"></i>
-            </button>
+            <div class="beat-actions">
+                <button class="edit-beat" data-id="${beat.id}">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="remove-beat" data-id="${beat.id}">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
         `;
         
         adminBeatsList.appendChild(beatItem);
     });
     
-    // Add remove functionality
+    document.querySelectorAll('.edit-beat').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            const beatId = e.currentTarget.dataset.id;
+            const beat = beats.find(b => b.id === beatId);
+            
+            if (beat) {
+                document.getElementById('adminBeatTitle').value = beat.title || '';
+                document.getElementById('adminBeatGenre').value = beat.genre || '';
+                document.getElementById('adminBeatBPM').value = beat.bpm || '';
+                document.getElementById('adminBeatKey').value = beat.key || '';
+                document.getElementById('adminBeatLease').value = beat.lease || '';
+                document.getElementById('adminBeatExclusive').value = beat.exclusive || '';
+                document.getElementById('adminBeatAudio').value = beat.audio || '';
+                document.getElementById('adminBeatThumbnail').value = beat.thumbnail || '';
+                
+                editingBeatId = beatId;
+                
+                const addBeatBtn = document.getElementById('adminAddBeat');
+                if (addBeatBtn) {
+                    addBeatBtn.innerHTML = '<i class="fas fa-save"></i> Update Beat';
+                }
+                
+                showNotification('Editing: ' + beat.title);
+            }
+        });
+    });
+    
     document.querySelectorAll('.remove-beat').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             const beatId = e.currentTarget.dataset.id;
@@ -1198,7 +1150,6 @@ function updateAdminMixList() {
         adminMixesList.appendChild(mixItem);
     });
     
-    // Add remove functionality
     document.querySelectorAll('.remove-mix').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             const mixId = e.currentTarget.dataset.id;
@@ -1243,7 +1194,6 @@ function updateAdminFeedbackList() {
         adminFeedbackList.appendChild(feedbackItem);
     });
     
-    // Add remove functionality
     document.querySelectorAll('.remove-feedback').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             const feedbackId = e.currentTarget.dataset.id;
@@ -1282,8 +1232,26 @@ function updateFeedbackCount() {
     });
 }
 
+function resetBeatForm() {
+    document.getElementById('adminBeatTitle').value = '';
+    document.getElementById('adminBeatGenre').value = '';
+    document.getElementById('adminBeatBPM').value = '';
+    document.getElementById('adminBeatKey').value = '';
+    document.getElementById('adminBeatLease').value = '';
+    document.getElementById('adminBeatExclusive').value = '';
+    document.getElementById('adminBeatAudio').value = '';
+    document.getElementById('adminBeatThumbnail').value = '';
+    
+    editingBeatId = null;
+    
+    const addBeatBtn = document.getElementById('adminAddBeat');
+    if (addBeatBtn) {
+        addBeatBtn.innerHTML = '<i class="fas fa-plus"></i> Add Beat';
+    }
+}
+
 // ============================================
-// IMAGE MANAGEMENT (FROM OLD)
+// IMAGE MANAGEMENT
 // ============================================
 function initImageManagement() {
     const adminBgUpload = document.getElementById('adminBgUpload');
@@ -1294,7 +1262,6 @@ function initImageManagement() {
     let adminCurrentBgImage = localStorage.getItem('websiteBackground') || 'https://i.imgur.com/gcs6MBM.jpeg';
     let adminCurrentProfileImage = localStorage.getItem('websiteProfile') || 'https://i.imgur.com/1TZwnGp.jpeg';
     
-    // Load saved images
     function loadAdminImages() {
         const savedBg = localStorage.getItem('websiteBackground');
         const savedProfile = localStorage.getItem('websiteProfile');
@@ -1310,7 +1277,6 @@ function initImageManagement() {
         }
     }
     
-    // Update image preview
     function updateImagePreview(previewId, imageSrc, altText) {
         const previewElement = document.getElementById(previewId);
         if (previewElement) {
@@ -1323,7 +1289,6 @@ function initImageManagement() {
         }
     }
     
-    // Background image upload
     if (adminBgUpload) {
         adminBgUpload.addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -1338,7 +1303,6 @@ function initImageManagement() {
         });
     }
     
-    // Profile image upload
     if (adminProfileUpload) {
         adminProfileUpload.addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -1353,7 +1317,6 @@ function initImageManagement() {
         });
     }
     
-    // Save images
     if (adminSaveImagesBtn) {
         adminSaveImagesBtn.addEventListener('click', () => {
             if (adminCurrentBgImage) {
@@ -1370,7 +1333,6 @@ function initImageManagement() {
         });
     }
     
-    // Reset images
     if (adminResetImagesBtn) {
         adminResetImagesBtn.addEventListener('click', () => {
             adminCurrentBgImage = 'https://i.imgur.com/gcs6MBM.jpeg';
@@ -1383,7 +1345,6 @@ function initImageManagement() {
         });
     }
     
-    // Initialize previews
     updateImagePreview('adminBgPreview', adminCurrentBgImage, 'Current Background');
     updateImagePreview('adminProfilePreview', adminCurrentProfileImage, 'Current Profile');
 }
@@ -1398,7 +1359,6 @@ function initDataManagement() {
     const exportFeedbackBtn = document.getElementById('exportFeedback');
     const clearAllFeedbackBtn = document.getElementById('clearAllFeedback');
     
-    // Export beats data
     if (exportDataBtn) {
         exportDataBtn.addEventListener('click', () => {
             const exportData = {
@@ -1421,7 +1381,6 @@ function initDataManagement() {
         });
     }
     
-    // Export feedback data
     if (exportFeedbackBtn) {
         exportFeedbackBtn.addEventListener('click', () => {
             const exportData = {
@@ -1444,7 +1403,6 @@ function initDataManagement() {
         });
     }
     
-    // Import beats data
     if (importDataBtn) {
         importDataBtn.addEventListener('click', () => {
             const input = document.createElement('input');
@@ -1481,7 +1439,6 @@ function initDataManagement() {
         });
     }
     
-    // Clear all beats
     if (clearAllBeatsBtn) {
         clearAllBeatsBtn.addEventListener('click', () => {
             if (confirm("⚠️ WARNING: This will delete ALL beats from cloud storage. Are you sure?")) {
@@ -1494,7 +1451,6 @@ function initDataManagement() {
         });
     }
     
-    // Clear all feedback
     if (clearAllFeedbackBtn) {
         clearAllFeedbackBtn.addEventListener('click', () => {
             if (confirm("⚠️ WARNING: This will delete ALL feedback. Are you sure?")) {
@@ -1514,7 +1470,6 @@ function initDataManagement() {
 document.addEventListener('DOMContentLoaded', () => {
     console.log("Initializing Trek Media Studios...");
     
-    // Initialize all components
     initThemeSwitcher();
     initNavigation();
     initActiveNavHighlight();
@@ -1526,17 +1481,13 @@ document.addEventListener('DOMContentLoaded', () => {
     initFeedbackForm();
     initAdminPanel();
     
-    // Load data from cloud
     loadBeatsFromCloud();
     loadMixesFromCloud();
     loadFeedbackFromCloud();
     
-    // Add welcome message
     setTimeout(() => {
         showNotification('Welcome to Trek Media Studios! 🎵');
     }, 1000);
     
     console.log("Website initialized successfully with all requested features!");
-
 });
-
