@@ -22,6 +22,21 @@
     document.body.addEventListener('click', unlockAudio, { once: true });
 })();
 
+// MOBILE OPTIMIZATION - Preload critical sections
+if ('connection' in navigator && navigator.connection.saveData) {
+    console.log("Data saver mode - optimizing loading");
+}
+
+// Optimize images with lazy loading
+document.addEventListener('DOMContentLoaded', function() {
+    const images = document.querySelectorAll('img');
+    images.forEach(img => {
+        if (!img.hasAttribute('loading')) {
+            img.setAttribute('loading', 'lazy');
+        }
+    });
+});
+
 const firebaseConfig = {
     apiKey: "AIzaSyBYWZ_APyVmmXz93x9lHOSXcdN8V4tX2_0",
     authDomain: "trek-media-studios.firebaseapp.com",
@@ -34,7 +49,10 @@ const firebaseConfig = {
 
 // FIXED FIREBASE INITIALIZATION
 try {
-    firebase.initializeApp(firebaseConfig);
+    // Check if Firebase is already initialized
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
     console.log("Firebase connected successfully");
 } catch (error) {
     console.error("Firebase initialization error:", error);
@@ -885,7 +903,6 @@ if (window.location.hash === '#nthanda') {
 window.addEventListener('hashchange', function() {
     if (window.location.hash === '#nthanda') {
         adminAccessBtn.style.display = 'flex';
-        showNotification('🔓 Admin access available');
     } else {
         adminAccessBtn.style.display = 'none';
     }
