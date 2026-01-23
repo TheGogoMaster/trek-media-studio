@@ -32,17 +32,15 @@
 
 // FIREBASE CONFIGURATION
 const firebaseConfig = {
-    apiKey: "AIzaSyD2tQzsNMtLOciLMokNofyCW93C06Qoj_k",
+    apiKey: "AIzaSyBYWZ_APyVmmXz93x9lHOSXcdN8V4tX2_0",
     authDomain: "trek-media-studios.firebaseapp.com",
-    databaseURL: "https://trek-media-studios-default-rtdb.firebaseio.com",
     projectId: "trek-media-studios",
     storageBucket: "trek-media-studios.firebasestorage.app",
-    messagingSenderId: "449193157475",
-    appId: "1:449193157475:web:f9166ea800e4357d432956",
-    measurementId: "G-D2J7HJ8REE"
+    messagingSenderId: "992475532982",
+    appId: "1:992475532982:web:78f5548e6e0724e037d92a",
+    measurementId: "G-WJ58P3X3ER"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const beatsRef = database.ref('beats');
