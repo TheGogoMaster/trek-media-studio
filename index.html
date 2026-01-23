@@ -13,7 +13,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
     <style>
-    /* Notification System Styles */
     .notification {
         position: fixed;
         top: 20px;
@@ -72,7 +71,6 @@
     </style>
 </head>
 <body data-theme="dark">
-    <!-- Theme Switcher -->
     <div class="theme-switcher">
         <button class="theme-btn active" data-theme="dark" title="Dark Mode">
             <i class="fas fa-moon"></i>
@@ -85,7 +83,6 @@
         </button>
     </div>
 
-    <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
             <div class="logo">
@@ -107,7 +104,6 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <section id="home" class="hero">
         <div class="hero-bg" style="background-image: url('https://i.imgur.com/gcs6MBM.jpeg');"></div>
         <div class="hero-overlay"></div>
@@ -127,7 +123,6 @@
                 </div>
             </div>
             
-            <!-- Profile Image -->
             <div class="profile-image-container">
                 <div class="profile-image" id="profileImage">
                     <img src="https://i.imgur.com/1TZwnGp.jpeg" alt="The GogoMaster - Professional Music Producer">
@@ -144,7 +139,6 @@
         </div>
     </section>
 
-    <!-- About Section -->
     <section id="about" class="about">
         <div class="container">
             <h2 class="section-title"><i class="fas fa-user"></i> About The Producer</h2>
@@ -195,13 +189,11 @@
         </div>
     </section>
 
-    <!-- Beat Catalog -->
     <section id="beats" class="beats">
         <div class="container">
             <h2 class="section-title"><i class="fas fa-music"></i> Beat Catalog</h2>
             <p class="section-subtitle">Premium Quality Beats • Ready for Your Next Hit</p>
             
-            <!-- Audio Player -->
             <div class="audio-player" id="audioPlayer">
                 <div class="player-header">
                     <h3><i class="fas fa-play-circle"></i> Now Playing</h3>
@@ -223,7 +215,6 @@
                 <p class="player-note"><i class="fas fa-shield-alt"></i> Audio is protected - cannot be downloaded</p>
             </div>
 
-            <!-- Beat Add Form -->
             <div class="add-beat-form">
                 <h3><i class="fas fa-plus-circle"></i> Add New Beat</h3>
                 <div class="form-row">
@@ -247,9 +238,7 @@
                 </div>
             </div>
 
-            <!-- Beats Grid -->
             <div class="beats-grid" id="beatsGrid">
-                <!-- Beats loaded from Firebase -->
                 <div class="loading-beats">
                     <i class="fas fa-spinner fa-spin"></i>
                     <p>Loading beats from cloud...</p>
@@ -258,13 +247,11 @@
         </div>
     </section>
 
-    <!-- Mixes Catalog Section -->
     <section id="mixes" class="mixes">
         <div class="container">
             <h2 class="section-title"><i class="fas fa-sliders-h"></i> My Mixes & Productions</h2>
             <p class="section-subtitle">Professional Mixes & Production Showcase</p>
             
-            <!-- Mixes Add Form (Admin Only) -->
             <div class="add-mix-form" style="display: none;">
                 <h3><i class="fas fa-plus-circle"></i> Add New Mix</h3>
                 <div class="form-row">
@@ -284,7 +271,6 @@
                 </div>
             </div>
 
-            <!-- Mixes Grid -->
             <div class="mixes-grid" id="mixesGrid">
                 <div class="loading-mixes">
                     <i class="fas fa-spinner fa-spin"></i>
@@ -294,7 +280,6 @@
         </div>
     </section>
 
-    <!-- Services -->
     <section id="services" class="services">
         <div class="container">
             <h2 class="section-title"><i class="fas fa-sliders-h"></i> My Services</h2>
@@ -370,13 +355,11 @@
         </div>
     </section>
 
-    <!-- Feedback Section -->
     <section id="feedback" class="feedback">
         <div class="container">
             <h2 class="section-title"><i class="fas fa-comments"></i> Client Feedback</h2>
             <p class="section-subtitle">What clients say about my work</p>
             
-            <!-- Feedback Form -->
             <div class="feedback-form">
                 <h3><i class="fas fa-edit"></i> Leave Your Feedback</h3>
                 <form id="feedbackForm">
@@ -400,14 +383,11 @@
                 </form>
             </div>
 
-            <!-- Feedback Display -->
             <div class="feedback-display" id="feedbackDisplay">
-                <!-- Feedback will be loaded dynamically -->
             </div>
         </div>
     </section>
 
-    <!-- Contact -->
     <section id="contact" class="contact">
         <div class="container">
             <h2 class="section-title"><i class="fas fa-envelope"></i> Get In Touch</h2>
@@ -483,7 +463,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
@@ -512,7 +491,6 @@
         </div>
     </footer>
 
-    <!-- Purchase Modal -->
     <div class="modal" id="purchaseModal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -546,20 +524,17 @@
         </div>
     </div>
 
-    <!-- Hidden Admin Access Button -->
     <div class="admin-access-btn" id="adminAccessBtn">
         <i class="fas fa-lock"></i>
     </div>
 
-    <!-- Admin Panel -->
-    <div class="admin-panel" id="adminPanel">
+    <section id="adminPanel" class="admin-panel" style="display: none;">
         <div class="admin-header">
             <h3><i class="fas fa-user-shield"></i> Admin Panel</h3>
             <button class="close-admin">&times;</button>
         </div>
         
         <div class="admin-content">
-            <!-- Beat Management -->
             <div class="admin-section">
                 <h4><i class="fas fa-music"></i> Beat Management</h4>
                 <div class="add-beat-form">
@@ -589,12 +564,10 @@
                 <div class="current-beats">
                     <h5>Current Beats (<span id="beatCount">0</span>)</h5>
                     <div class="beats-list" id="adminBeatsList">
-                        <!-- Beats will appear here -->
                     </div>
                 </div>
             </div>
             
-            <!-- Mixes Management -->
             <div class="admin-section">
                 <h4><i class="fas fa-sliders-h"></i> Mixes Management</h4>
                 <div class="add-beat-form">
@@ -620,18 +593,15 @@
                 <div class="current-beats">
                     <h5>Current Mixes (<span id="mixCount">0</span>)</h5>
                     <div class="beats-list" id="adminMixesList">
-                        <!-- Mixes will appear here -->
                     </div>
                 </div>
             </div>
             
-            <!-- Feedback Management -->
             <div class="admin-section">
                 <h4><i class="fas fa-comments"></i> Feedback Management</h4>
                 <div class="current-beats">
                     <h5>Client Feedback (<span id="feedbackCount">0</span>)</h5>
                     <div class="beats-list" id="adminFeedbackList">
-                        <!-- Feedback will appear here -->
                     </div>
                 </div>
                 <div class="data-controls">
@@ -644,7 +614,6 @@
                 </div>
             </div>
             
-            <!-- Image Management -->
             <div class="admin-section">
                 <h4><i class="fas fa-images"></i> Image Management</h4>
                 <div class="admin-image-controls">
@@ -677,7 +646,6 @@
                 </div>
             </div>
             
-            <!-- Export/Import -->
             <div class="admin-section">
                 <h4><i class="fas fa-database"></i> Data Management</h4>
                 <div class="data-controls">
@@ -694,9 +662,8 @@
                 <p class="admin-note"><i class="fas fa-info-circle"></i> Beats now saved to cloud. Export data for backup.</p>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Password Modal -->
     <div class="password-modal" id="passwordModal">
         <div class="password-content">
             <h3><i class="fas fa-key"></i> Admin Access</h3>
