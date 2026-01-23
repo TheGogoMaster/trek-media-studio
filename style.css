@@ -2435,7 +2435,6 @@ section {
     visibility: hidden !important;
 }
 
-/* Google Login Button */
 .btn-google {
     width: 100%;
     padding: 12px;
@@ -2444,21 +2443,14 @@ section {
     border: 1px solid #ddd;
     border-radius: 5px;
     font-weight: 600;
-    font-size: 1rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
     margin-bottom: 15px;
-    transition: all 0.3s;
 }
-
-.btn-google:hover {
-    background: #f8f8f8;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
+.btn-google:hover { background: #f5f5f5; }
 .login-divider {
     text-align: center;
     margin: 15px 0;
