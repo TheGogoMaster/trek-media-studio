@@ -2315,10 +2315,36 @@ section {
     gap: 10px;
     margin-bottom: 15px;
 }
+
 .btn-google:hover { background: #f5f5f5; }
 .login-divider {
     text-align: center;
     margin: 15px 0;
     color: #888;
     font-size: 0.9rem;
+}
+
+[data-theme="light"] {
+    /* Softer, more comfortable light theme */
+    --primary-dark: #f8f8f8;
+    --secondary-dark: #f0f0f0;
+    --accent-red: #c62828;
+    --accent-gold: #b8860b;
+    --text-light: #333333;
+    --text-gray: #666666;
+    --card-bg: #ffffff;
+    --border-color: #e0e0e0;
+    --hero-bg: linear-gradient(135deg, rgba(248, 248, 248, 0.97), rgba(240, 240, 240, 0.97));
+}
+
+[data-theme="light"] .hero {
+    background: var(--hero-bg), linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%) !important;
+}
+
+[data-theme="light"] .service-card,
+[data-theme="light"] .beat-card,
+[data-theme="light"] .contact-item {
+    background: linear-gradient(145deg, #ffffff, #fafafa);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
