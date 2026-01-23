@@ -50,6 +50,55 @@ const mixesRef = database.ref('mixes');
 const feedbackRef = database.ref('feedback');
 
 // ============================================
+// GOOGLE + EMAIL/PASSWORD LOGIN SYSTEM
+// ============================================
+let currentAdminUser = null;
+
+function initGoogleLogin() {
+    const googleBtn = document.getElementById('googleLoginBtn');
+    if (!googleBtn) return;
+    
+    googleBtn.addEventListener('click', async () => {
+        try {
+            googleBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
+            googleBtn.disabled = true;
+            
+            const provider = new firebase.auth.GoogleAuthProvider();
+            const result = await firebase.auth().signInWithPopup(provider);
+            const user = result.user;
+            
+            handleAdminLogin(user);
+            
+        } catch (error) {
+            console.error('Google login error:', error);
+            showNotification('Google login failed. Try email/password.');
+        } finally {
+            googleBtn.innerHTML = '<i class="fab fa-google"></i> Login with Google';
+            googleBtn.disabled = false;
+        }
+    });
+}
+
+function handleAdminLogin(user) {
+    const allowedAdmins = ['iloventhanda@gmail.com'];
+    
+    if (allowedAdmins.includes(user.email)) {
+        document.getElementById('passwordModal').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        currentAdminUser = user;
+        showNotification('✅ Admin access granted!');
+        
+        updateAdminBeatList();
+        updateAdminMixList();
+        updateAdminFeedbackList();
+        loadAdminImages();
+    } else {
+        firebase.auth().signOut();
+        showNotification('❌ This account is not authorized.');
+    }
+}
+
+// ============================================
 // GLOBAL VARIABLES
 // ============================================
 let currentAudio = null;
@@ -880,11 +929,74 @@ function initAdminPanel() {
     const adminPasswordInput = document.getElementById('adminPassword');
     const closeAdminBtn = document.querySelector('.close-admin');
     
-    // Update modal text
-    const modalText = passwordModal.querySelector('p');
-    if (modalText) {
-        modalText.textContent = 'Enter your admin email and password:';
+    adminAccessBtn.style.display = 'none';
+    
+    if (window.location.hash === '#nthanda' || sessionStorage.getItem('adminUnlocked') === 'true') {
+        adminAccessBtn.style.display = 'flex';
+        if (window.location.hash === '#nthanda') {
+            sessionStorage.setItem('adminUnlocked', 'true');
+        }
     }
+    
+    adminAccessBtn.addEventListener('click', () => {
+        passwordModal.style.display = 'flex';
+        adminEmailInput.focus();
+    });
+    
+    // EMAIL/PASSWORD LOGIN
+    submitPasswordBtn.addEventListener('click', async () => {
+        const email = adminEmailInput.value.trim();
+        const password = adminPasswordInput.value.trim();
+        
+        if (!email || !password) {
+            showNotification('Enter email and password');
+            return;
+        }
+        
+        submitPasswordBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+        submitPasswordBtn.disabled = true;
+        
+        try {
+            const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+            handleAdminLogin(userCredential.user);
+            
+        } catch (error) {
+            console.error('Login error:', error);
+            
+            // TEMPORARY FALLBACK
+            if (email === 'iloventhanda@gmail.com' && password === 'Mynthanda265*') {
+                handleAdminLogin({ email: email, uid: 'temp-admin', displayName: 'Admin' });
+            } else {
+                showNotification('Login failed: ' + error.message);
+            }
+            
+        } finally {
+            submitPasswordBtn.innerHTML = 'Login with Email';
+            submitPasswordBtn.disabled = false;
+            adminEmailInput.value = '';
+            adminPasswordInput.value = '';
+        }
+    });
+    
+    cancelPasswordBtn.addEventListener('click', () => {
+        passwordModal.style.display = 'none';
+        adminEmailInput.value = '';
+        adminPasswordInput.value = '';
+    });
+    
+    closeAdminBtn.addEventListener('click', () => {
+        adminPanel.style.display = 'none';
+        if (firebase.auth().currentUser) {
+            firebase.auth().signOut();
+        }
+        currentAdminUser = null;
+    });
+    
+    // INITIALIZE GOOGLE LOGIN
+    initGoogleLogin();
+    
+    initAdminFunctions();
+}
     
     // Hide admin by default
     adminAccessBtn.style.display = 'none';
