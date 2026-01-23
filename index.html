@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beat Sales, Vocal Mixing, Mastering & Music Production Lessons | Trek Media Studios</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎛️</text></svg>">
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
+    <style>
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, var(--accent-red), #ff5500);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        z-index: 3000;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+        animation: slideIn 0.3s ease;
+        max-width: 350px;
+        font-weight: 500;
+    }
+
+    .close-notification {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0;
+        line-height: 1;
+        transition: transform 0.2s;
+    }
+
+    .close-notification:hover {
+        transform: scale(1.2);
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="theme-switcher">
+        <button class="theme-btn active" data-theme="dark" title="Dark Mode">
+            <i class="fas fa-moon"></i>
+        </button>
+        <button class="theme-btn" data-theme="light" title="Light Mode">
+            <i class="fas fa-sun"></i>
+        </button>
+        <button class="theme-btn" data-theme="colorful" title="Colorful Mode">
+            <i class="fas fa-palette"></i>
+        </button>
+    </div>
+
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">🎛️</span>
+                <span class="logo-text">Trek Media Studios</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="#about"><i class="fas fa-user"></i> About</a></li>
+                <li><a href="#beats"><i class="fas fa-music"></i> Beats</a></li>
+                <li><a href="#mixes"><i class="fas fa-sliders-h"></i> Mixes</a></li>
+                <li><a href="#services"><i class="fas fa-sliders-h"></i> Services</a></li>
+                <li><a href="#feedback"><i class="fas fa-comments"></i> Feedback</a></li>
+                <li><a href="#contact"><i class="fas fa-envelope"></i> Contact</a></li>
+            </ul>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="hero-bg" style="background-image: url('https://i.imgur.com/gcs6MBM.jpeg');"></div>
+        <div class="hero-overlay"></div>
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Welcome to Trek Media Studios 😊</h1>
+                <p class="hero-subtitle">Transforming Sound Into Art</p>
+                <p class="hero-tagline">Professional Beat Sales • Vocal Mixing • Mastering • Music Production Lessons</p>
+                <div class="hero-buttons">
+                    <a href="#beats" class="btn btn-primary"><i class="fas fa-headphones"></i> Browse Beats</a>
+                    <a href="#contact" class="btn btn-secondary"><i class="fas fa-calendar-alt"></i> Book Session</a>
+                </div>
+                <div class="hero-scroll">
+                    <a href="#about" class="scroll-down">
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="profile-image-container">
+                <div class="profile-image" id="profileImage">
+                    <img src="https://i.imgur.com/1TZwnGp.jpeg" alt="The GogoMaster - Professional Music Producer">
+                    <div class="profile-badge">
+                        <i class="fas fa-certificate"></i>
+                        PRO
+                    </div>
+                </div>
+                <div class="profile-info">
+                    <h3>THE GOGOMASTER</h3>
+                    <p>Music Producer/Audio Engineer</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-user"></i> About The Producer</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p class="bio">"Transforming sound into art, I'm a seasoned Music Producer & Audio Engineer with years of experience. I am passionate about crafting compelling sounds, I elevate artists' visions and bring music to life. With expertise in content creation and advert production, I craft audio that captivates audiences and drives results. Staying ahead of industry trends, I deliver high-quality recordings, mixes, masters, and ads that resonate with listeners."</p>
+                    <div class="producer-tag">
+                        <p>Specializing in beat sales, vocal mixing, mastering, and one-on-one music production lessons for aspiring artists and producers.</p>
+                        <span class="tag-icon">🎚️</span>
+                        <h3>THE GOGOMASTER</h3>
+                        <p class="tag-subtitle">Producer @ Trek Media Studios</p>
+                    </div>
+                    <div class="skills">
+                        <h4><i class="fas fa-star"></i> Core Skills</h4>
+                        <div class="skill-tags">
+                            <span class="skill-tag"><i class="fas fa-music"></i> Music Production</span>
+                            <span class="skill-tag"><i class="fas fa-sliders-h"></i> Mixing & Mastering</span>
+                            <span class="skill-tag"><i class="fas fa-microphone"></i> Voice Recording</span>
+                            <span class="skill-tag"><i class="fas fa-broadcast-tower"></i> Audio Engineering</span>
+                            <span class="skill-tag"><i class="fas fa-ad"></i> Advert Production</span>
+                            <span class="skill-tag"><i class="fas fa-graduation-cap"></i> Production Lessons</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-stats">
+                    <div class="stat">
+                        <div class="stat-icon"><i class="fas fa-compact-disc"></i></div>
+                        <div class="stat-number">100+</div>
+                        <div class="stat-label">Tracks Produced</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">Artists Worked With</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+                        <div class="stat-number">10+</div>
+                        <div class="stat-label">Years Experience</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-icon"><i class="fas fa-award"></i></div>
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Studio Availability</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="beats" class="beats">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-music"></i> Beat Catalog</h2>
+            <p class="section-subtitle">Premium Quality Beats • Ready for Your Next Hit</p>
+            
+            <div class="audio-player" id="audioPlayer">
+                <div class="player-header">
+                    <h3><i class="fas fa-play-circle"></i> Now Playing</h3>
+                    <span id="nowPlaying">Select a beat to preview</span>
+                </div>
+                <div class="player-controls">
+                    <button id="playBtn" class="control-btn"><i class="fas fa-play"></i></button>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <div class="time-display">
+                        <span id="currentTime">0:00</span> / <span id="totalTime">0:00</span>
+                    </div>
+                    <div class="volume-control">
+                        <i class="fas fa-volume-up"></i>
+                        <input type="range" id="volumeSlider" min="0" max="100" value="70">
+                    </div>
+                </div>
+                <p class="player-note"><i class="fas fa-shield-alt"></i> Audio is protected - cannot be downloaded</p>
+            </div>
+
+            <div class="add-beat-form">
+                <h3><i class="fas fa-plus-circle"></i> Add New Beat</h3>
+                <div class="form-row">
+                    <input type="text" id="beatTitle" placeholder="Beat Title (e.g., Midnight Drive)">
+                    <input type="text" id="beatGenre" placeholder="Genre (e.g., Trap, R&B)">
+                </div>
+                <div class="form-row">
+                    <input type="number" id="beatBPM" placeholder="BPM (e.g., 140)">
+                    <input type="text" id="beatKey" placeholder="Key (e.g., F Minor)">
+                </div>
+                <div class="form-row">
+                    <input type="text" id="beatPriceLease" placeholder="Lease Price ($)">
+                    <input type="text" id="beatPriceExclusive" placeholder="Exclusive Price ($)">
+                </div>
+                <div class="form-row">
+                    <input type="text" id="beatAudioUrl" placeholder="Audio URL (SoundCloud/YouTube/GitHub)">
+                    <input type="text" id="beatThumbnailUrl" placeholder="Thumbnail URL (Optional)">
+                </div>
+                <div class="form-row">
+                    <button id="addBeatBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Add Beat to Store</button>
+                </div>
+            </div>
+
+            <div class="beats-grid" id="beatsGrid">
+                <div class="loading-beats">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading beats from cloud...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="mixes" class="mixes">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-sliders-h"></i> My Mixes & Productions</h2>
+            <p class="section-subtitle">Professional Mixes & Production Showcase</p>
+            
+            <div class="add-mix-form" style="display: none;">
+                <h3><i class="fas fa-plus-circle"></i> Add New Mix</h3>
+                <div class="form-row">
+                    <input type="text" id="mixTitle" placeholder="Mix Title (e.g., Summer Vibes Mix)">
+                    <input type="text" id="mixGenre" placeholder="Genre (e.g., Afrobeat, Hip-Hop)">
+                </div>
+                <div class="form-row">
+                    <input type="text" id="mixClient" placeholder="Client/Project Name">
+                    <input type="text" id="mixDate" placeholder="Date (e.g., Jan 2024)">
+                </div>
+                <div class="form-row">
+                    <input type="text" id="mixAudioUrl" placeholder="Audio URL">
+                    <input type="text" id="mixThumbnailUrl" placeholder="Thumbnail URL (Optional)">
+                </div>
+                <div class="form-row">
+                    <button id="addMixBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Add Mix</button>
+                </div>
+            </div>
+
+            <div class="mixes-grid" id="mixesGrid">
+                <div class="loading-mixes">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading mixes...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="services">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-sliders-h"></i> My Services</h2>
+            <p class="section-subtitle">Professional Audio Solutions for Artists & Creators</p>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">🎵</div>
+                    <h3>Beats Making</h3>
+                    <p>Original, high-quality beats across all genres. Custom production tailored to your style.</p>
+                    <div class="service-tags">
+                        <span>Trap</span>
+                        <span>R&B</span>
+                        <span>Hip-Hop</span>
+                        <span>Afrobeat</span>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🎚️</div>
+                    <h3>Mixing & Mastering</h3>
+                    <p>Professional audio post-production. Crystal clear mixes and radio-ready masters.</p>
+                    <div class="service-tags">
+                        <span>Mixing</span>
+                        <span>Mastering</span>
+                        <span>Vocal Tuning</span>
+                        <span>Audio Restoration</span>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🎙️</div>
+                    <h3>Voice Recording</h3>
+                    <p>Studio recording with professional equipment. Vocal coaching and direction included.</p>
+                    <div class="service-tags">
+                        <span>Vocals</span>
+                        <span>Voice Overs</span>
+                        <span>Podcasts</span>
+                        <span>Audio Books</span>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🎬</div>
+                    <h3>Voice Overs & Ads</h3>
+                    <p>Jingles, commercials, and advert production. Professional voice talent available.</p>
+                    <div class="service-tags">
+                        <span>Jingles</span>
+                        <span>Commercials</span>
+                        <span>Radio Ads</span>
+                        <span>TV Ads</span>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">📚</div>
+                    <h3>Production Lessons</h3>
+                    <p>Learn music production from basics to advanced. One-on-one or group sessions.</p>
+                    <div class="service-tags">
+                        <span>Beginner</span>
+                        <span>Advanced</span>
+                        <span>FL Studio</span>
+                        <span>Logic Pro</span>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">💾</div>
+                    <h3>Samples & Presets</h3>
+                    <p>Premium sound packs for producers. Drum kits, melodies, and synth presets.</p>
+                    <div class="service-tags">
+                        <span>Drum Kits</span>
+                        <span>Loop Packs</span>
+                        <span>Synth Presets</span>
+                        <span>Sound Banks</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="feedback" class="feedback">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-comments"></i> Client Feedback</h2>
+            <p class="section-subtitle">What clients say about my work</p>
+            
+            <div class="feedback-form">
+                <h3><i class="fas fa-edit"></i> Leave Your Feedback</h3>
+                <form id="feedbackForm">
+                    <div class="form-row">
+                        <input type="text" id="feedbackName" placeholder="Your Name" required>
+                        <input type="text" id="feedbackProject" placeholder="Project/Service Used">
+                    </div>
+                    <div class="form-row">
+                        <select id="feedbackRating" required>
+                            <option value="">Select Rating</option>
+                            <option value="5">★★★★★ Excellent</option>
+                            <option value="4">★★★★☆ Very Good</option>
+                            <option value="3">★★★☆☆ Good</option>
+                            <option value="2">★★☆☆☆ Fair</option>
+                            <option value="1">★☆☆☆☆ Poor</option>
+                        </select>
+                        <input type="text" id="feedbackLocation" placeholder="Your Location (Optional)">
+                    </div>
+                    <textarea id="feedbackMessage" placeholder="Share your experience working with me..." rows="3" required></textarea>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit Feedback</button>
+                </form>
+            </div>
+
+            <div class="feedback-display" id="feedbackDisplay">
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-envelope"></i> Get In Touch</h2>
+            <p class="section-subtitle">Ready to create something amazing? Let's connect!</p>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">📧</div>
+                        <div class="contact-details">
+                            <h3>Email</h3>
+                            <a href="mailto:iloventhanda@gmail.com">iloventhanda@gmail.com</a>
+                            <p>Response within 24 hours</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📱</div>
+                        <div class="contact-details">
+                            <h3>WhatsApp</h3>
+                            <a href="https://wa.me/265996017545">+265 996 017 545</a>
+                            <p>Fastest response - business hours</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <div class="contact-details">
+                            <h3>Studio Location</h3>
+                            <p>Trek Media Studios</p>
+                            <p>Professional Recording Facility</p>
+                        </div>
+                    </div>
+                    <div class="social-links">
+                        <h3>Connect With Me</h3>
+                        <div class="social-icons">
+                            <a href="https://instagram.com/the_gogomaster265" target="_blank" class="social-icon" title="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="https://youtube.com/@TheGogoMaster265" target="_blank" class="social-icon" title="YouTube">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                            <a href="https://web.facebook.com/TrekMediaRecords" target="_blank" class="social-icon" title="Facebook">
+                                <i class="fab fa-facebook"></i>
+                            </a>
+                            <a href="https://tiktok.com/@the.gogomasterboa" target="_blank" class="social-icon" title="TikTok">
+                                <i class="fab fa-tiktok"></i>
+                            </a>
+                            <a href="https://linktr.ee/thegogomaster265" target="_blank" class="social-icon" title="Linktree">
+                                <i class="fas fa-link"></i>
+                            </a>
+                            <a href="https://soundcloud.com" target="_blank" class="social-icon" title="SoundCloud">
+                                <i class="fab fa-soundcloud"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <h3><i class="fas fa-paper-plane"></i> Send a Direct Message</h3>
+                    <form id="messageForm">
+                        <input type="text" placeholder="Your Name" required>
+                        <input type="email" placeholder="Your Email" required>
+                        <select required>
+                            <option value="">Select Service</option>
+                            <option value="beat">Beat Purchase</option>
+                            <option value="mixing">Mixing/Mastering</option>
+                            <option value="recording">Studio Recording</option>
+                            <option value="lessons">Production Lessons</option>
+                            <option value="other">Other Inquiry</option>
+                        </select>
+                        <textarea placeholder="Tell me about your project, deadlines, budget, and any specific requirements..." rows="5" required></textarea>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <span class="logo-icon">🎛️</span>
+                    <span class="logo-text">Trek Media Studios</span>
+                </div>
+                <p class="footer-tagline">Crafting Sound That Moves The World</p>
+                <div class="footer-links">
+                    <a href="#home">Home</a> • 
+                    <a href="#about">About</a> • 
+                    <a href="#beats">Beats</a> • 
+                    <a href="#mixes">Mixes</a> • 
+                    <a href="#services">Services</a> • 
+                    <a href="#feedback">Feedback</a> • 
+                    <a href="#contact">Contact</a>
+                </div>
+                <p class="copyright">
+                    © 2024 <strong>The GogoMaster</strong>. All Rights Reserved.<br>
+                    Trek Media Studios • Music Production • Audio Engineering
+                </p>
+                <p class="footer-note">
+                    <i class="fas fa-headphones"></i> Professional audio services for artists worldwide
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="modal" id="purchaseModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2><i class="fas fa-shopping-cart"></i> Purchase Beat</h2>
+            <p id="modalBeatTitle">[Beat Title]</p>
+            <div class="purchase-options">
+                <div class="purchase-option">
+                    <h3><i class="fab fa-whatsapp"></i> Option 1: WhatsApp</h3>
+                    <p>Contact directly via WhatsApp for fastest response. Include the beat title in your message.</p>
+                    <a href="https://wa.me/265996017545?text=Hi%20GogoMaster,%20I%20want%20to%20purchase%20the%20beat%20" class="btn btn-whatsapp" target="_blank">
+                        <i class="fab fa-whatsapp"></i> Contact on WhatsApp
+                    </a>
+                </div>
+                <div class="purchase-option">
+                    <h3><i class="fas fa-envelope"></i> Option 2: Email</h3>
+                    <p>Send an email with your purchase inquiry. Please mention the beat title and intended use.</p>
+                    <a href="mailto:iloventhanda@gmail.com?subject=Beat%20Purchase%20Inquiry" class="btn btn-email" target="_blank">
+                        <i class="fas fa-envelope"></i> Send Email
+                    </a>
+                </div>
+            </div>
+            <div class="modal-note">
+                <p><i class="fas fa-info-circle"></i> <strong>Licensing Information:</strong></p>
+                <ul>
+                    <li><strong>Lease:</strong> Non-exclusive rights for streaming/distribution</li>
+                    <li><strong>Exclusive:</strong> Full ownership, no one else can use the beat</li>
+                    <li>Both options include high-quality WAV/MP3 files</li>
+                    <li>Custom beats available upon request</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-access-btn" id="adminAccessBtn">
+        <i class="fas fa-cog"></i>
+    </div>
+
+    <section id="adminPanel" class="admin-panel" style="display: none;">
+        <div class="admin-header">
+            <h3><i class="fas fa-user-shield"></i> Admin Panel</h3>
+            <button class="close-admin">&times;</button>
+        </div>
+        
+        <div class="admin-content">
+            <div class="admin-section">
+                <h4><i class="fas fa-music"></i> Beat Management</h4>
+                <div class="add-beat-form">
+                    <div class="form-row">
+                        <input type="text" id="adminBeatTitle" placeholder="Beat Title">
+                        <input type="text" id="adminBeatGenre" placeholder="Genre">
+                    </div>
+                    <div class="form-row">
+                        <input type="number" id="adminBeatBPM" placeholder="BPM">
+                        <input type="text" id="adminBeatKey" placeholder="Key">
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="adminBeatLease" placeholder="Lease Price ($)">
+                        <input type="text" id="adminBeatExclusive" placeholder="Exclusive Price ($)">
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="adminBeatAudio" placeholder="Audio URL">
+                        <input type="text" id="adminBeatThumbnail" placeholder="Thumbnail URL (Optional)">
+                    </div>
+                    <div class="form-row">
+                        <button id="adminAddBeat" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Beat
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="current-beats">
+                    <h5>Current Beats (<span id="beatCount">0</span>)</h5>
+                    <div class="beats-list" id="adminBeatsList">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="admin-section">
+                <h4><i class="fas fa-sliders-h"></i> Mixes Management</h4>
+                <div class="add-beat-form">
+                    <div class="form-row">
+                        <input type="text" id="adminMixTitle" placeholder="Mix Title">
+                        <input type="text" id="adminMixGenre" placeholder="Genre">
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="adminMixClient" placeholder="Client/Project">
+                        <input type="text" id="adminMixDate" placeholder="Date">
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="adminMixAudio" placeholder="Audio URL">
+                        <input type="text" id="adminMixThumbnail" placeholder="Thumbnail URL (Optional)">
+                    </div>
+                    <div class="form-row">
+                        <button id="adminAddMix" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Mix
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="current-beats">
+                    <h5>Current Mixes (<span id="mixCount">0</span>)</h5>
+                    <div class="beats-list" id="adminMixesList">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="admin-section">
+                <h4><i class="fas fa-comments"></i> Feedback Management</h4>
+                <div class="current-beats">
+                    <h5>Client Feedback (<span id="feedbackCount">0</span>)</h5>
+                    <div class="beats-list" id="adminFeedbackList">
+                    </div>
+                </div>
+                <div class="data-controls">
+                    <button id="exportFeedback" class="btn btn-secondary">
+                        <i class="fas fa-download"></i> Export Feedback
+                    </button>
+                    <button id="clearAllFeedback" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Clear All Feedback
+                    </button>
+                </div>
+            </div>
+            
+            <div class="admin-section">
+                <h4><i class="fas fa-images"></i> Image Management</h4>
+                <div class="admin-image-controls">
+                    <div class="image-upload-group">
+                        <h5>Background Image</h5>
+                        <input type="file" id="adminBgUpload" accept="image/*" hidden>
+                        <button class="btn-upload-img" onclick="document.getElementById('adminBgUpload').click()">
+                            <i class="fas fa-upload"></i> Upload Background
+                        </button>
+                        <div class="admin-preview" id="adminBgPreview"></div>
+                    </div>
+                    
+                    <div class="image-upload-group">
+                        <h5>Profile Image</h5>
+                        <input type="file" id="adminProfileUpload" accept="image/*" hidden>
+                        <button class="btn-upload-img" onclick="document.getElementById('adminProfileUpload').click()">
+                            <i class="fas fa-upload"></i> Upload Profile
+                        </button>
+                        <div class="admin-preview" id="adminProfilePreview"></div>
+                    </div>
+                    
+                    <div class="admin-actions">
+                        <button id="adminSaveImages" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Images
+                        </button>
+                        <button id="adminResetImages" class="btn btn-secondary">
+                            <i class="fas fa-undo"></i> Reset to Default
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="admin-section">
+                <h4><i class="fas fa-database"></i> Data Management</h4>
+                <div class="data-controls">
+                    <button id="exportData" class="btn btn-secondary">
+                        <i class="fas fa-download"></i> Export Beats Data
+                    </button>
+                    <button id="importData" class="btn btn-secondary">
+                        <i class="fas fa-upload"></i> Import Beats
+                    </button>
+                    <button id="clearAllBeats" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Clear All Beats
+                    </button>
+                </div>
+                <p class="admin-note"><i class="fas fa-info-circle"></i> Beats now saved to cloud. Export data for backup.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="password-modal" id="passwordModal">
+    <div class="password-content">
+        <h3><i class="fas fa-key"></i> Admin Access</h3>
+        <p>Choose login method:</p>
+        
+        <button id="googleSignInBtn" class="btn btn-google">
+            <i class="fab fa-google"></i> Sign in with Google
+        </button>
+        
+        <p style="margin: 1rem 0; color: var(--text-gray);">— OR —</p>
+        
+        <input type="email" id="adminEmail" placeholder="Admin Email" autocomplete="off">
+        <input type="password" id="adminPassword" placeholder="Password" autocomplete="off">
+        
+        <div class="password-actions">
+            <button id="submitPassword" class="btn btn-primary">Login with Email</button>
+            <button id="cancelPassword" class="btn btn-secondary">Cancel</button>
+        </div>
+        
+        <p class="password-hint">Use your Firebase admin credentials</p>
+    </div>
+</div>
+
+    <script src="script.js"></script>
+</body>
+</html>
