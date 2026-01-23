@@ -929,6 +929,8 @@ function initAdminPanel() {
     const adminPasswordInput = document.getElementById('adminPassword');
     const closeAdminBtn = document.querySelector('.close-admin');
     
+    adminAccessBtn.style.display = 'none';
+    
     if (window.location.hash === '#nthanda') {
         adminAccessBtn.style.display = 'flex';
         sessionStorage.setItem('adminUnlocked', 'true');
@@ -1041,6 +1043,8 @@ function initAdminPanel() {
     }
     
     initAdminFunctions();
+    loadBeats();
+    loadMixes();
 }
     
     // Hide admin by default
