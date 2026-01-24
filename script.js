@@ -1009,47 +1009,52 @@ function initAdminFunctions() {
         adminAddBeatBtn.addEventListener('click', async (e) => {
             e.preventDefault();
             
-            const beatData = {
-                title: document.getElementById('adminBeatTitle').value.trim(),
-                genre: document.getElementById('adminBeatGenre').value.trim(),
-                bpm: document.getElementById('adminBeatBPM').value.trim(),
-                key: document.getElementById('adminBeatKey').value.trim(),
-                lease: document.getElementById('adminBeatLease').value.trim(),
-                exclusive: document.getElementById('adminBeatExclusive').value.trim(),
-                audio: document.getElementById('adminBeatAudio').value.trim(),
-                thumbnail: document.getElementById('adminBeatThumbnail').value.trim() || null
-            };
+const beatData = {
+    title: document.getElementById('adminBeatTitle').value.trim(),
+    genre: document.getElementById('adminBeatGenre').value.trim(),
+    bpm: document.getElementById('adminBeatBPM').value.trim(),
+    key: document.getElementById('adminBeatKey').value.trim(),
+    lease: document.getElementById('adminBeatLease').value.trim(),
+    exclusive: document.getElementById('adminBeatExclusive').value.trim(),
+    audio: document.getElementById('adminBeatAudio').value.trim(),
+    thumbnail: document.getElementById('adminBeatThumbnail').value.trim() || null  // This || null is important!
+};
             
             if (!beatData.title || !beatData.audio) {
                 showNotification('Please provide at least a beat title and audio URL');
                 return;
             }
             
-            if (editingBeatId) {
-                beatsRef.child(editingBeatId).update(beatData)
-                    .then(() => {
-                        showNotification('Beat updated successfully!');
-                        resetBeatForm();
-                        editingBeatId = null;
-                    })
-                    .catch(error => {
-                        showNotification('Error updating beat: ' + error.message);
-                    });
-            } else {
-                const success = await addBeatToCloud(beatData);
-                if (success) {
-                    document.getElementById('adminBeatTitle').value = '';
-                    document.getElementById('adminBeatGenre').value = '';
-                    document.getElementById('adminBeatBPM').value = '';
-                    document.getElementById('adminBeatKey').value = '';
-                    document.getElementById('adminBeatLease').value = '';
-                    document.getElementById('adminBeatExclusive').value = '';
-                    document.getElementById('adminBeatAudio').value = '';
-                    document.getElementById('adminBeatThumbnail').value = '';
-                    
-                    showNotification('Beat added to cloud!');
-                }
-            }
+if (editingBeatId) {
+    // Create a copy of beatData but KEEP the thumbnail field
+    const updateData = { ...beatData };
+    // Only remove audio URL to prevent file changes
+    delete updateData.audio;
+    
+    beatsRef.child(editingBeatId).update(updateData)
+        .then(() => {
+            showNotification('Beat updated successfully!');
+            resetBeatForm();
+            editingBeatId = null;
+        })
+        .catch(error => {
+            showNotification('Error updating beat: ' + error.message);
+        });
+} else {
+    const success = await addBeatToCloud(beatData);
+    if (success) {
+        document.getElementById('adminBeatTitle').value = '';
+        document.getElementById('adminBeatGenre').value = '';
+        document.getElementById('adminBeatBPM').value = '';
+        document.getElementById('adminBeatKey').value = '';
+        document.getElementById('adminBeatLease').value = '';
+        document.getElementById('adminBeatExclusive').value = '';
+        document.getElementById('adminBeatAudio').value = '';
+        document.getElementById('adminBeatThumbnail').value = '';
+        
+        showNotification('Beat added to cloud!');
+    }
+}
         });
     }
     
@@ -1123,30 +1128,30 @@ function updateAdminBeatList() {
     
     document.querySelectorAll('.edit-beat').forEach(btn => {
         btn.addEventListener('click', function(e) {
-            const beatId = e.currentTarget.dataset.id;
-            const beat = beats.find(b => b.id === beatId);
-            
-            if (beat) {
-                document.getElementById('adminBeatTitle').value = beat.title || '';
-                document.getElementById('adminBeatGenre').value = beat.genre || '';
-                document.getElementById('adminBeatBPM').value = beat.bpm || '';
-                document.getElementById('adminBeatKey').value = beat.key || '';
-                document.getElementById('adminBeatLease').value = beat.lease || '';
-                document.getElementById('adminBeatExclusive').value = beat.exclusive || '';
-                document.getElementById('adminBeatAudio').value = beat.audio || '';
-                document.getElementById('adminBeatThumbnail').value = beat.thumbnail || '';
-                
-                editingBeatId = beatId;
-                
-                const addBeatBtn = document.getElementById('adminAddBeat');
-                if (addBeatBtn) {
-                    addBeatBtn.innerHTML = '<i class="fas fa-save"></i> Update Beat';
-                }
-                
-                showNotification('Editing: ' + beat.title);
-            }
-        });
-    });
+    const beatId = e.currentTarget.dataset.id;
+    const beat = beats.find(b => b.id === beatId);
+    
+    if (beat) {
+        document.getElementById('adminBeatTitle').value = beat.title || '';
+        document.getElementById('adminBeatGenre').value = beat.genre || '';
+        document.getElementById('adminBeatBPM').value = beat.bpm || '';
+        document.getElementById('adminBeatKey').value = beat.key || '';
+        document.getElementById('adminBeatLease').value = beat.lease || '';
+        document.getElementById('adminBeatExclusive').value = beat.exclusive || '';
+        document.getElementById('adminBeatAudio').value = beat.audio || '';
+        document.getElementById('adminBeatThumbnail').value = beat.thumbnail || '';
+        
+        editingBeatId = beatId;
+        
+        const addBeatBtn = document.getElementById('adminAddBeat');
+        if (addBeatBtn) {
+            addBeatBtn.innerHTML = '<i class="fas fa-save"></i> Update Beat';
+            addBeatBtn.style.background = 'var(--accent-orange)'; // ADD THIS LINE
+        }
+        
+        showNotification('Editing: ' + beat.title);
+    }
+});
     
     document.querySelectorAll('.remove-beat').forEach(btn => {
         btn.addEventListener('click', async (e) => {
@@ -1288,6 +1293,7 @@ function resetBeatForm() {
     const addBeatBtn = document.getElementById('adminAddBeat');
     if (addBeatBtn) {
         addBeatBtn.innerHTML = '<i class="fas fa-plus"></i> Add Beat';
+        addBeatBtn.style.background = ''; // ADD THIS LINE
     }
 }
 
