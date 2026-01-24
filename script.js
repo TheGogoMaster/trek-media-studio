@@ -394,7 +394,6 @@ function initScrollAnimations() {
 }
 
 function initBeatProtection() {
-    // REMOVED F12 BLOCKING
     document.addEventListener('contextmenu', function(e) {
         if (e.target.closest('.audio-player') || e.target.closest('.beat-card') || e.target.closest('.mix-card')) {
             e.preventDefault();
@@ -402,7 +401,7 @@ function initBeatProtection() {
         }
     });
     
-    // Only block save shortcuts, NOT F12
+    // ONLY block save shortcuts, NOT F12
     document.addEventListener('keydown', function(e) {
         if ((e.ctrlKey && e.key === 's') || 
             (e.ctrlKey && e.shiftKey && e.key === 'S') ||
